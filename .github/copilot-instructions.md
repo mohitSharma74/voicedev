@@ -13,12 +13,12 @@
 VoiceDev uses configurable AI providers for two distinct operations:
 
 1. **Speech-to-Text (STT)**: Convert voice audio to text
-   - Providers: Groq Whisper (default, free), OpenAI, Local Whisper
-   - Provider selected via `voicedev.stt.provider` config
+    - Providers: Groq Whisper (default, free), OpenAI, Local Whisper
+    - Provider selected via `voicedev.stt.provider` config
 
 2. **Language Model (LLM)**: Generate commit messages and responses
-   - Providers: OpenRouter (default), Groq, OpenAI
-   - Model configured via `voicedev.llm.provider` + `voicedev.llm.model`
+    - Providers: OpenRouter (default), Groq, OpenAI
+    - Model configured via `voicedev.llm.provider` + `voicedev.llm.model`
 
 **Why this design?**
 

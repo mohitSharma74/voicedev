@@ -1,27 +1,35 @@
 {
-  "root": true,
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "ecmaVersion": 2022,
-    "sourceType": "module"
-  },
-  "plugins": ["@typescript-eslint"],
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended"
-  ],
-  "rules": {
-    "@typescript-eslint/naming-convention": [
-      "warn",
-      {
-        "selector": "import",
-        "format": ["camelCase", "PascalCase"]
-      }
-    ],
-    "curly": "warn",
-    "eqeqeq": "warn",
-    "no-throw-literal": "warn",
-    "semi": "warn"
-  },
-  "ignorePatterns": ["out", "node_modules", "**/*.d.ts"]
+	"root": true,
+	"env": {
+		"node": true,
+		"es2022": true
+	},
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"ecmaVersion": 2022,
+		"sourceType": "module",
+		"project": "./tsconfig.json",
+		"tsconfigRootDir": "."
+	},
+	"plugins": ["@typescript-eslint"],
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:@typescript-eslint/recommended-type-checked",
+		"plugin:prettier/recommended"
+	],
+	"rules": {
+		"@typescript-eslint/naming-convention": [
+			"warn",
+			{
+				"selector": "import",
+				"format": ["camelCase", "PascalCase"]
+			}
+		],
+		"curly": "warn",
+		"eqeqeq": "warn",
+		"no-throw-literal": "warn",
+		"semi": "warn"
+	},
+	"ignorePatterns": ["out", "node_modules", "**/*.d.ts"]
 }

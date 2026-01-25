@@ -39,11 +39,11 @@ VoiceDev supports multiple AI providers to give users flexibility in cost, speed
 
 #### Speech-to-Text Providers
 
-| Provider | Speed | Cost | Offline | Default |
-|----------|-------|------|---------|---------|
-| **Groq Whisper** | ⚡ Very Fast | 🆓 Free | ❌ | ✅ YES |
-| **OpenAI Whisper** | 🐢 Medium | 💰 $0.006/min | ❌ | ❌ |
-| **Local Whisper** | 🐌 Slow | 🆓 Free | ✅ | v0.2.0+ |
+| Provider           | Speed        | Cost          | Offline | Default |
+| ------------------ | ------------ | ------------- | ------- | ------- |
+| **Groq Whisper**   | ⚡ Very Fast | 🆓 Free       | ❌      | ✅ YES  |
+| **OpenAI Whisper** | 🐢 Medium    | 💰 $0.006/min | ❌      | ❌      |
+| **Local Whisper**  | 🐌 Slow      | 🆓 Free       | ✅      | v0.2.0+ |
 
 **Why Groq as Default?**
 
@@ -54,11 +54,11 @@ VoiceDev supports multiple AI providers to give users flexibility in cost, speed
 
 #### LLM Providers (Commit Messages)
 
-| Provider | Models Available | Cost | Default |
-|----------|------------------|------|---------|
-| **OpenRouter** | 100+ models | Varies | ✅ YES |
-| **Groq** | Llama 3, Mixtral | 🆓 Free | ❌ |
-| **OpenAI** | GPT-4o-mini | $0.15/1M tokens | ❌ |
+| Provider       | Models Available | Cost            | Default |
+| -------------- | ---------------- | --------------- | ------- |
+| **OpenRouter** | 100+ models      | Varies          | ✅ YES  |
+| **Groq**       | Llama 3, Mixtral | 🆓 Free         | ❌      |
+| **OpenAI**     | GPT-4o-mini      | $0.15/1M tokens | ❌      |
 
 **Why OpenRouter as Default?**
 
@@ -242,11 +242,11 @@ Insert text at cursor position:
 
 - Voice → command mapping system
 - 5 basic commands implemented:
-  - "save all"
-  - "format document"
-  - "new terminal"
-  - "git status"
-  - "close editor"
+    - "save all"
+    - "format document"
+    - "new terminal"
+    - "git status"
+    - "close editor"
 
 #### Phase 2.2: Developer Commands (Days 10-11)
 
@@ -443,8 +443,8 @@ Insert text at cursor position:
 **Key Functions**:
 
 ```typescript
-export function activate(context: vscode.ExtensionContext)
-export function deactivate()
+export function activate(context: vscode.ExtensionContext);
+export function deactivate();
 ```
 
 #### 2. Voice Recording Module (`src/services/recorder.ts`)
@@ -460,9 +460,9 @@ export function deactivate()
 
 ```typescript
 class VoiceRecorder {
-  startRecording(): Promise<void>
-  stopRecording(): Promise<Buffer>
-  isRecording(): boolean
+	startRecording(): Promise<void>;
+	stopRecording(): Promise<Buffer>;
+	isRecording(): boolean;
 }
 ```
 
@@ -480,29 +480,29 @@ class VoiceRecorder {
 
 ```typescript
 interface ITranscriptionProvider {
-  transcribe(audioBuffer: Buffer): Promise<string>
-  validateApiKey(): boolean
-  getName(): string
+	transcribe(audioBuffer: Buffer): Promise<string>;
+	validateApiKey(): boolean;
+	getName(): string;
 }
 
 class GroqTranscriptionProvider implements ITranscriptionProvider {
-  // Fast, free tier, default choice
+	// Fast, free tier, default choice
 }
 
 class OpenAITranscriptionProvider implements ITranscriptionProvider {
-  // Reliable fallback
+	// Reliable fallback
 }
 
 class TranscriptionService {
-  private provider: ITranscriptionProvider
-  
-  constructor(providerType: 'groq' | 'openai' | 'local') {
-    this.provider = this.createProvider(providerType)
-  }
-  
-  transcribe(audioBuffer: Buffer): Promise<string> {
-    return this.provider.transcribe(audioBuffer)
-  }
+	private provider: ITranscriptionProvider;
+
+	constructor(providerType: "groq" | "openai" | "local") {
+		this.provider = this.createProvider(providerType);
+	}
+
+	transcribe(audioBuffer: Buffer): Promise<string> {
+		return this.provider.transcribe(audioBuffer);
+	}
 }
 ```
 
@@ -519,25 +519,25 @@ class TranscriptionService {
 
 ```typescript
 interface ILLMProvider {
-  generateCommitMessage(diff: string, userInput: string): Promise<string>
-  validateApiKey(): boolean
-  getName(): string
+	generateCommitMessage(diff: string, userInput: string): Promise<string>;
+	validateApiKey(): boolean;
+	getName(): string;
 }
 
 class OpenRouterProvider implements ILLMProvider {
-  // Default: Access to 100+ models
+	// Default: Access to 100+ models
 }
 
 class GroqLLMProvider implements ILLMProvider {
-  // Free tier Llama/Mixtral
+	// Free tier Llama/Mixtral
 }
 
 class LLMService {
-  private provider: ILLMProvider
-  
-  async generateCommitMessage(diff: string, userInput: string): Promise<string> {
-    return this.provider.generateCommitMessage(diff, userInput)
-  }
+	private provider: ILLMProvider;
+
+	async generateCommitMessage(diff: string, userInput: string): Promise<string> {
+		return this.provider.generateCommitMessage(diff, userInput);
+	}
 }
 ```
 
@@ -554,16 +554,16 @@ class LLMService {
 
 ```typescript
 class CommandParser {
-  parse(text: string): ParsedCommand
-  isCommand(text: string): boolean
-  findBestMatch(text: string): Command | null
+	parse(text: string): ParsedCommand;
+	isCommand(text: string): boolean;
+	findBestMatch(text: string): Command | null;
 }
 
 interface ParsedCommand {
-  type: 'text' | 'command'
-  intent?: string
-  parameters?: any
-  confidence: number
+	type: "text" | "command";
+	intent?: string;
+	parameters?: any;
+	confidence: number;
 }
 ```
 
@@ -580,16 +580,16 @@ interface ParsedCommand {
 
 ```typescript
 class CommandRegistry {
-  register(command: VoiceCommand): void
-  execute(intent: string, params?: any): Promise<void>
-  listCommands(): VoiceCommand[]
+	register(command: VoiceCommand): void;
+	execute(intent: string, params?: any): Promise<void>;
+	listCommands(): VoiceCommand[];
 }
 
 interface VoiceCommand {
-  triggers: string[]      // ["console log", "add console"]
-  description: string
-  execute: (params?: any) => Promise<void>
-  category: 'editor' | 'git' | 'terminal' | 'debug'
+	triggers: string[]; // ["console log", "add console"]
+	description: string;
+	execute: (params?: any) => Promise<void>;
+	category: "editor" | "git" | "terminal" | "debug";
 }
 ```
 
@@ -606,10 +606,10 @@ interface VoiceCommand {
 
 ```typescript
 class GitService {
-  getDiff(): Promise<string>
-  generateCommitMessage(diff: string, userInput: string): Promise<string>
-  commit(message: string): Promise<void>
-  isGitRepository(): boolean
+	getDiff(): Promise<string>;
+	generateCommitMessage(diff: string, userInput: string): Promise<string>;
+	commit(message: string): Promise<void>;
+	isGitRepository(): boolean;
 }
 ```
 
@@ -626,9 +626,9 @@ class GitService {
 
 ```typescript
 class StatusBarManager {
-  updateStatus(state: 'idle' | 'recording' | 'processing')
-  showError(message: string)
-  showSuccess(message: string)
+	updateStatus(state: "idle" | "recording" | "processing");
+	showError(message: string);
+	showSuccess(message: string);
 }
 ```
 
@@ -642,13 +642,13 @@ class StatusBarManager {
 
 ```json
 {
-  "name": "voicedev",
-  "displayName": "VoiceDev",
-  "publisher": "yourusername",
-  "version": "0.1.0",
-  "engines": {
-    "vscode": "^1.85.0"
-  }
+	"name": "voicedev",
+	"displayName": "VoiceDev",
+	"publisher": "yourusername",
+	"version": "0.1.0",
+	"engines": {
+		"vscode": "^1.85.0"
+	}
 }
 ```
 
@@ -670,7 +670,7 @@ class StatusBarManager {
 
 ```json
 {
-  "node-record-lpcm16": "^1.0.1"  // Cross-platform audio recording
+	"node-record-lpcm16": "^1.0.1" // Cross-platform audio recording
 }
 ```
 
@@ -684,7 +684,7 @@ class StatusBarManager {
 
 ```json
 {
-  "openai": "^4.20.0"  // Official OpenAI SDK (optional provider)
+	"openai": "^4.20.0" // Official OpenAI SDK (optional provider)
 }
 ```
 
@@ -692,9 +692,9 @@ class StatusBarManager {
 
 ```json
 {
-  "groq-sdk": "^0.3.0",        // Groq for fast Whisper + Llama
-  "@openrouter/ai": "^1.0.0",  // OpenRouter for multi-model access
-  "anthropic": "^0.20.0"       // Claude SDK (via OpenRouter)
+	"groq-sdk": "^0.3.0", // Groq for fast Whisper + Llama
+	"@openrouter/ai": "^1.0.0", // OpenRouter for multi-model access
+	"anthropic": "^0.20.0" // Claude SDK (via OpenRouter)
 }
 ```
 
@@ -708,21 +708,21 @@ class StatusBarManager {
 
 ```typescript
 // Built-in, no installation needed
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
 // Key APIs we'll use:
-- vscode.window.createStatusBarItem()
-- vscode.workspace.getConfiguration()
-- vscode.commands.registerCommand()
-- vscode.window.activeTextEditor
-- vscode.workspace.fs
+-vscode.window.createStatusBarItem() -
+	vscode.workspace.getConfiguration() -
+	vscode.commands.registerCommand() -
+	vscode.window.activeTextEditor -
+	vscode.workspace.fs;
 ```
 
 #### Git Integration
 
 ```json
 {
-  "simple-git": "^3.20.0"  // Git operations
+	"simple-git": "^3.20.0" // Git operations
 }
 ```
 
@@ -736,18 +736,18 @@ import * as vscode from 'vscode';
 
 ```json
 {
-  "@types/node": "^20.0.0",
-  "@types/vscode": "^1.85.0",
-  "@typescript-eslint/eslint-plugin": "^6.0.0",
-  "@typescript-eslint/parser": "^6.0.0",
-  "esbuild": "^0.19.0",
-  "eslint": "^8.0.0",
-  "typescript": "^5.3.0",
-  
-  // Testing
-  "@vscode/test-electron": "^2.3.0",
-  "mocha": "^10.0.0",
-  "chai": "^4.3.0"
+	"@types/node": "^20.0.0",
+	"@types/vscode": "^1.85.0",
+	"@typescript-eslint/eslint-plugin": "^6.0.0",
+	"@typescript-eslint/parser": "^6.0.0",
+	"esbuild": "^0.19.0",
+	"eslint": "^8.0.0",
+	"typescript": "^5.3.0",
+
+	// Testing
+	"@vscode/test-electron": "^2.3.0",
+	"mocha": "^10.0.0",
+	"chai": "^4.3.0"
 }
 ```
 
@@ -755,7 +755,7 @@ import * as vscode from 'vscode';
 
 ```json
 {
-  "@vscode/vsce": "^2.22.0"  // Package and publish extensions
+	"@vscode/vsce": "^2.22.0" // Package and publish extensions
 }
 ```
 
@@ -779,13 +779,12 @@ vsce publish          # Publish to marketplace
 #### OpenAI API
 
 - **Whisper API**: Speech-to-text transcription
-  - Model: `whisper-1`
-  - Cost: ~$0.006 per minute
-  - Format: MP3, WAV, M4A (we'll use WAV)
-  
+    - Model: `whisper-1`
+    - Cost: ~$0.006 per minute
+    - Format: MP3, WAV, M4A (we'll use WAV)
 - **GPT-4o-mini API**: Commit message generation
-  - Cost: $0.15 per 1M input tokens
-  - Use for: Analyzing diffs + generating messages
+    - Cost: $0.15 per 1M input tokens
+    - Use for: Analyzing diffs + generating messages
 
 **API Key Storage**:
 
@@ -1065,31 +1064,30 @@ gh copilot suggest "write unit test for command parser fuzzy matching"
 **Roadmap**:
 
 - **v0.2.0-preview**: Local Whisper support (offline mode)
-  - Run Whisper locally via whisper.cpp
-  - No API costs, full privacy
-  - Slower but works offline
-  
+    - Run Whisper locally via whisper.cpp
+    - No API costs, full privacy
+    - Slower but works offline
 - **v0.3.0-preview**: Code generation from voice
-  - "create a function that..."
-  - "add error handling to this"
-  - Context-aware code completion
+    - "create a function that..."
+    - "add error handling to this"
+    - Context-aware code completion
 
 - **v0.4.0-preview**: Developer dictionary (learn from codebase)
-  - Extract variable names, function names
-  - API endpoints from your code
-  - Project-specific vocabulary
+    - Extract variable names, function names
+    - API endpoints from your code
+    - Project-specific vocabulary
 
 - **v0.5.0**: Custom voice commands (user-defined)
-  - Create your own command mappings
-  - Snippet library with voice triggers
-  - Share commands with team
+    - Create your own command mappings
+    - Snippet library with voice triggers
+    - Share commands with team
 
 - **v1.0.0**: Production Release 🚀
-  - All core features polished
-  - Multi-language support
-  - Team collaboration features
-  - Extensive documentation
-  - Product Hunt launch
+    - All core features polished
+    - Multi-language support
+    - Team collaboration features
+    - Extensive documentation
+    - Product Hunt launch
 
 **v1.0.0 Success Criteria**:
 

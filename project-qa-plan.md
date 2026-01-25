@@ -45,14 +45,14 @@ Users can switch providers in VS Code settings:
 
 ```json
 {
-  // Speech-to-Text Provider
-  "voicedev.stt.provider": "groq",  // Options: groq | openai | local
-  "voicedev.stt.apiKey": "gsk_...",
-  
-  // LLM Provider (for commit messages)
-  "voicedev.llm.provider": "openrouter",  // Options: openrouter | groq | openai
-  "voicedev.llm.apiKey": "sk-or-...",
-  "voicedev.llm.model": "anthropic/claude-3-haiku-20240307"
+	// Speech-to-Text Provider
+	"voicedev.stt.provider": "groq", // Options: groq | openai | local
+	"voicedev.stt.apiKey": "gsk_...",
+
+	// LLM Provider (for commit messages)
+	"voicedev.llm.provider": "openrouter", // Options: openrouter | groq | openai
+	"voicedev.llm.apiKey": "sk-or-...",
+	"voicedev.llm.model": "anthropic/claude-3-haiku-20240307"
 }
 ```
 
@@ -63,23 +63,23 @@ We're using the **Provider Pattern** for extensibility:
 ```typescript
 // Speech-to-Text providers
 interface ITranscriptionProvider {
-  transcribe(audioBuffer: Buffer): Promise<string>
-  validateApiKey(): boolean
-  getName(): string
+	transcribe(audioBuffer: Buffer): Promise<string>;
+	validateApiKey(): boolean;
+	getName(): string;
 }
 
-class GroqTranscriptionProvider implements ITranscriptionProvider { }
-class OpenAITranscriptionProvider implements ITranscriptionProvider { }
+class GroqTranscriptionProvider implements ITranscriptionProvider {}
+class OpenAITranscriptionProvider implements ITranscriptionProvider {}
 
-// LLM providers  
+// LLM providers
 interface ILLMProvider {
-  generateCommitMessage(diff: string, userInput: string): Promise<string>
-  validateApiKey(): boolean
-  getName(): string
+	generateCommitMessage(diff: string, userInput: string): Promise<string>;
+	validateApiKey(): boolean;
+	getName(): string;
 }
 
-class OpenRouterProvider implements ILLMProvider { }
-class GroqLLMProvider implements ILLMProvider { }
+class OpenRouterProvider implements ILLMProvider {}
+class GroqLLMProvider implements ILLMProvider {}
 ```
 
 Adding new providers in the future is trivial - just implement the interface!
@@ -134,6 +134,7 @@ v1.0.0 → PRODUCTION RELEASE 🚀 (July-Aug)
 **Title**: VoiceDev (Preview) - Voice Commands for VS Code
 
 **Description**:
+
 > 🎙️ **Public Preview** - Voice-activated commands for developers
 >
 > VoiceDev brings voice control to your VS Code workflow. Execute commands, generate git commits, and insert code—all via voice.
@@ -169,9 +170,9 @@ src/services/providers/
 
 ```json
 {
-  "groq-sdk": "^0.3.0",
-  "@openrouter/ai": "^1.0.0",
-  "openai": "^4.20.0"  // Optional fallback
+	"groq-sdk": "^0.3.0",
+	"@openrouter/ai": "^1.0.0",
+	"openai": "^4.20.0" // Optional fallback
 }
 ```
 
@@ -281,12 +282,14 @@ gh copilot suggest "record audio from microphone in Node.js on Windows"
 
 ```markdown
 # Day 1 - Jan 25
+
 - Created extension scaffold
 - Set up Groq API
 - Copilot CLI helped with: [list]
 - Time saved: ~2 hours
 
 # Day 2 - Jan 26
+
 ...
 ```
 
