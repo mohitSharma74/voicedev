@@ -42,28 +42,34 @@ Configure VoiceDev in your VS Code settings:
 
 \`\`\`json
 {
-  "voicedev.stt.provider": "groq",
-  "voicedev.llm.provider": "openrouter",
-  "voicedev.llm.model": "anthropic/claude-3-haiku-20240307"
+"voicedev.stt.provider": "groq",
+"voicedev.llm.provider": "openrouter",
+"voicedev.llm.model": "anthropic/claude-3-haiku-20240307"
 }
 \`\`\`
 
 ## Development
 
 \`\`\`bash
+
 # Install dependencies
+
 npm install
 
 # Compile
+
 npm run compile
 
 # Watch mode
+
 npm run watch
 
 # Run tests
+
 npm run test
 
 # Lint
+
 npm run lint
 \`\`\`
 

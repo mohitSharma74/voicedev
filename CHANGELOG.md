@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Initial extension scaffold
 - Hello World command for testing
 - TypeScript configuration
@@ -18,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - Coming Soon
 
 ### Planned
+
 - Voice-activated commands (10-15 commands)
 - Voice-to-Git commits with Conventional Commits format
 - Quick voice dictation with hotkey activation

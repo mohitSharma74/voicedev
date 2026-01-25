@@ -1,78 +1,103 @@
 {
-  "name": "voicedev",
-  "displayName": "VoiceDev",
-  "description": "Voice-activated commands for VS Code - speak to code, commit, and control your editor",
-  "version": "0.1.0",
-  "publisher": "mohitSharma74",
-  "engines": {
-    "vscode": "^1.85.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "keywords": [
-    "voice",
-    "speech",
-    "dictation",
-    "accessibility",
-    "productivity",
-    "git",
-    "whisper"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/mohitSharma74/voicedev"
-  },
-  "activationEvents": [],
-  "main": "./out/extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "voicedev.helloWorld",
-        "title": "VoiceDev: Hello World"
-      }
-    ],
-    "configuration": {
-      "title": "VoiceDev",
-      "properties": {
-        "voicedev.stt.provider": {
-          "type": "string",
-          "default": "groq",
-          "enum": ["groq", "openai", "local"],
-          "description": "Speech-to-text provider"
-        },
-        "voicedev.llm.provider": {
-          "type": "string",
-          "default": "openrouter",
-          "enum": ["openrouter", "groq", "openai"],
-          "description": "LLM provider for commit message generation"
-        },
-        "voicedev.llm.model": {
-          "type": "string",
-          "default": "anthropic/claude-3-haiku-20240307",
-          "description": "LLM model to use (provider-specific)"
-        }
-      }
-    }
-  },
-  "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
-    "test": "vscode-test"
-  },
-  "devDependencies": {
-    "@types/mocha": "^10.0.6",
-    "@types/node": "20.x",
-    "@types/vscode": "^1.85.0",
-    "@typescript-eslint/eslint-plugin": "^6.15.0",
-    "@typescript-eslint/parser": "^6.15.0",
-    "@vscode/test-cli": "^0.0.4",
-    "@vscode/test-electron": "^2.3.8",
-    "eslint": "^8.56.0",
-    "typescript": "^5.3.3"
-  },
-  "dependencies": {}
+	"name": "voicedev",
+	"displayName": "VoiceDev",
+	"description": "Voice-activated commands for VS Code - speak to code, commit, and control your editor",
+	"version": "0.1.0",
+	"publisher": "mohitSharma74",
+	"engines": {
+		"vscode": "^1.85.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"keywords": [
+		"voice",
+		"speech",
+		"dictation",
+		"accessibility",
+		"productivity",
+		"git",
+		"whisper"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/mohitSharma74/voicedev"
+	},
+	"activationEvents": [],
+	"main": "./out/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "voicedev.helloWorld",
+				"title": "VoiceDev: Hello World"
+			}
+		],
+		"configuration": {
+			"title": "VoiceDev",
+			"properties": {
+				"voicedev.stt.provider": {
+					"type": "string",
+					"default": "groq",
+					"enum": [
+						"groq",
+						"openai",
+						"local"
+					],
+					"description": "Speech-to-text provider"
+				},
+				"voicedev.llm.provider": {
+					"type": "string",
+					"default": "openrouter",
+					"enum": [
+						"openrouter",
+						"groq",
+						"openai"
+					],
+					"description": "LLM provider for commit message generation"
+				},
+				"voicedev.llm.model": {
+					"type": "string",
+					"default": "anthropic/claude-3-haiku-20240307",
+					"description": "LLM model to use (provider-specific)"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"lint": "eslint src --ext ts --max-warnings=0",
+		"lint:fix": "eslint src --ext ts --fix",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"prepare": "husky",
+		"test": "vscode-test"
+	},
+	"devDependencies": {
+		"@types/mocha": "^10.0.6",
+		"@types/node": "20.x",
+		"@types/vscode": "^1.85.0",
+		"@typescript-eslint/eslint-plugin": "^6.15.0",
+		"@typescript-eslint/parser": "^6.15.0",
+		"@vscode/test-cli": "^0.0.4",
+		"@vscode/test-electron": "^2.3.8",
+		"eslint": "^8.56.0",
+		"eslint-config-prettier": "^9.0.0",
+		"eslint-plugin-prettier": "^5.0.1",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.2.7",
+		"prettier": "^3.2.4",
+		"typescript": "^5.3.3"
+	},
+	"lint-staged": {
+		"**/*.ts": [
+			"eslint --fix",
+			"prettier --write"
+		],
+		"**/*.{json,md,yml,yaml,css,scss,html}": [
+			"prettier --write"
+		]
+	}
 }
