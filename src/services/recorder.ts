@@ -22,8 +22,8 @@ export class VoiceRecorder implements IVoiceRecorder {
 		}
 
 		this.buffers = [];
-		const deviceIndex = PvRecorder.getDefaultDevice();
-		this.recorder = new PvRecorder(deviceIndex, this.frameLength, featureConfig.recording.sampleRate);
+		// Use default system device by omitting deviceIndex parameter
+		this.recorder = new PvRecorder(this.frameLength);
 		this.recorder.start();
 		this.isActive = true;
 		void this.captureFrames();

@@ -1,23 +1,17 @@
-declare module "pvrecorder-node" {
-	export class PvRecorder {
-		constructor(deviceIndex: number, frameLength: number, sampleRate?: number);
-		start(): void;
-		stop(): void;
-		release(): void;
-		read(): Promise<Int16Array>;
-		static getAvailableDevices(): string[];
-		static getDefaultDevice(): number;
-	}
-}
-
 declare module "@picovoice/pvrecorder-node" {
 	export class PvRecorder {
-		constructor(deviceIndex: number, frameLength: number, sampleRate?: number);
+		constructor(frameLength: number, deviceIndex?: number, bufferedFramesCount?: number);
 		start(): void;
 		stop(): void;
 		release(): void;
 		read(): Promise<Int16Array>;
+		readSync(): Int16Array;
+		setDebugLogging(isDebugLoggingEnabled: boolean): void;
+		getSelectedDevice(): string;
+		get frameLength(): number;
+		get sampleRate(): number;
+		get version(): string;
+		get isRecording(): boolean;
 		static getAvailableDevices(): string[];
-		static getDefaultDevice(): number;
 	}
 }

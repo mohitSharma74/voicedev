@@ -37,6 +37,10 @@
 			{
 				"command": "voicedev.stopRecording",
 				"title": "VoiceDev: Stop Recording"
+			},
+			{
+				"command": "voicedev.saveRecording",
+				"title": "VoiceDev: Save Recording"
 			}
 		],
 		"configuration": {
