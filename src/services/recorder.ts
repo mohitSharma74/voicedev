@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { PvRecorder } from "pvrecorder-node";
+import { PvRecorder } from "@picovoice/pvrecorder-node";
 import { featureConfig } from "../config/feature.config";
 import { IVoiceRecorder } from "./IVoiceRecorder";
 
@@ -72,6 +72,7 @@ export class VoiceRecorder implements IVoiceRecorder {
 			try {
 				const frame = await this.recorder.read();
 				this.buffers.push(this.frameToBuffer(frame));
+				console.log("Captured frame ~", this.buffers.length);
 			} catch (error) {
 				console.error("VoiceRecorder frame capture error", error);
 				this.isActive = false;

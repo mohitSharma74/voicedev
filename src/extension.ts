@@ -13,7 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const statusBar = new StatusBarManager();
 	context.subscriptions.push(statusBar);
 
-	const recorder = createRecorder();
+	const recorder = createRecorder(context);
 	context.subscriptions.push(new vscode.Disposable(() => recorder.dispose()));
 
 	const autoStopDisposable = recorder.onAutoStop(() => {

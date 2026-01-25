@@ -4,14 +4,25 @@ import { join } from "node:path";
 import { featureConfig } from "../config/feature.config";
 import { IVoiceRecorder } from "./IVoiceRecorder";
 
-const FIXTURE_PATH = join(__dirname, "../test/fixtures/sample.pcm");
-const SAMPLE_BUFFER = readFileSync(FIXTURE_PATH);
+function loadSampleBuffer(context: vscode.ExtensionContext): Buffer {
+	try {
+		return readFileSync(join(__dirname, "../test/fixtures/sample.pcm"));
+	} catch (error) {
+		const fixtureUri = vscode.Uri.joinPath(context.extensionUri, "src", "test", "fixtures", "sample.pcm");
+		return readFileSync(fixtureUri.fsPath);
+	}
+}
 
 export class MockVoiceRecorder implements IVoiceRecorder {
 	private recording = false;
 	private autoStopEmitter = new vscode.EventEmitter<void>();
 	private maxDurationMs = featureConfig.recording.maxDurationSeconds * 1000;
 	private timeout: NodeJS.Timeout | undefined;
+	private sampleBuffer: Buffer;
+
+	constructor(context: vscode.ExtensionContext) {
+		this.sampleBuffer = loadSampleBuffer(context);
+	}
 
 	get onAutoStop(): vscode.Event<void> {
 		return this.autoStopEmitter.event;
@@ -32,7 +43,7 @@ export class MockVoiceRecorder implements IVoiceRecorder {
 	stopRecording(): Promise<Buffer> {
 		this.clearTimeout();
 		this.recording = false;
-		return Promise.resolve(SAMPLE_BUFFER);
+		return Promise.resolve(this.sampleBuffer);
 	}
 
 	isRecording(): boolean {
