@@ -1,41 +1,32 @@
 import * as vscode from "vscode";
-import { record } from "node-record-lpcm16";
+import { PvRecorder } from "pvrecorder-node";
 import { featureConfig } from "../config/feature.config";
 import { IVoiceRecorder } from "./IVoiceRecorder";
 
 export class VoiceRecorder implements IVoiceRecorder {
 	private buffers: Buffer[] = [];
-	private recordingInstance: ReturnType<typeof record> | null = null;
-	private stream: NodeJS.ReadableStream | null = null;
+	private recorder: PvRecorder | null = null;
+	private isActive = false;
 	private autoStopEmitter = new vscode.EventEmitter<void>();
 	private timeout: NodeJS.Timeout | undefined;
 	private maxDurationMs = featureConfig.recording.maxDurationSeconds * 1000;
+	private readonly frameLength = 512;
 
 	get onAutoStop(): vscode.Event<void> {
 		return this.autoStopEmitter.event;
 	}
 
 	startRecording(): void {
-		if (this.recordingInstance) {
+		if (this.recorder || this.isActive) {
 			return;
 		}
 
 		this.buffers = [];
-		this.recordingInstance = record({
-			sampleRate: featureConfig.recording.sampleRate,
-			channels: featureConfig.recording.channels,
-			verbose: false,
-		});
-
-		this.stream = this.recordingInstance.stream();
-
-		this.stream.on("data", (chunk: Buffer) => {
-			this.buffers.push(chunk);
-		});
-
-		this.stream.on("error", (error: Error) => {
-			console.error("VoiceRecorder stream error", error);
-		});
+		const deviceIndex = PvRecorder.getDefaultDevice();
+		this.recorder = new PvRecorder(deviceIndex, this.frameLength, featureConfig.recording.sampleRate);
+		this.recorder.start();
+		this.isActive = true;
+		void this.captureFrames();
 
 		this.timeout = setTimeout(() => {
 			this.autoStopEmitter.fire();
@@ -46,17 +37,14 @@ export class VoiceRecorder implements IVoiceRecorder {
 	stopRecording(): Promise<Buffer> {
 		this.clearTimeout();
 
-		if (!this.recordingInstance) {
+		if (!this.recorder) {
 			return Promise.resolve(Buffer.alloc(0));
 		}
 
-		this.recordingInstance.stop();
-		this.recordingInstance = null;
-
-		if (this.stream) {
-			this.stream.removeAllListeners();
-			this.stream = null;
-		}
+		this.isActive = false;
+		this.recorder.stop();
+		this.recorder.release();
+		this.recorder = null;
 
 		const buffer = Buffer.concat(this.buffers);
 		this.buffers = [];
@@ -64,7 +52,7 @@ export class VoiceRecorder implements IVoiceRecorder {
 	}
 
 	isRecording(): boolean {
-		return this.recordingInstance !== null;
+		return this.recorder !== null && this.isActive;
 	}
 
 	dispose(): void {
@@ -77,5 +65,25 @@ export class VoiceRecorder implements IVoiceRecorder {
 			clearTimeout(this.timeout);
 			this.timeout = undefined;
 		}
+	}
+
+	private async captureFrames(): Promise<void> {
+		while (this.recorder && this.isActive) {
+			try {
+				const frame = await this.recorder.read();
+				this.buffers.push(this.frameToBuffer(frame));
+			} catch (error) {
+				console.error("VoiceRecorder frame capture error", error);
+				this.isActive = false;
+			}
+		}
+	}
+
+	private frameToBuffer(frame: Int16Array): Buffer {
+		const buffer = Buffer.alloc(frame.length * 2);
+		for (let index = 0; index < frame.length; index += 1) {
+			buffer.writeInt16LE(frame[index], index * 2);
+		}
+		return buffer;
 	}
 }

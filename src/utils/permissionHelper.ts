@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { getPlatform } from "./systemCheck";
+import { getPlatform } from "./systemCheck.js";
 
 const PERMISSION_STATE_KEY = "voicedev.permissionGuideDismissed";
 

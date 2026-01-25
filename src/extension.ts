@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import { createRecorder } from "./services/recorderFactory";
 import { StatusBarManager } from "./ui/statusBar";
-import { checkSoxInstalled, getSoxInstallInstructions } from "./utils/systemCheck";
 import { showMicrophonePermissionGuide } from "./utils/permissionHelper";
 import { featureConfig } from "./config/feature.config";
 
@@ -26,10 +25,6 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(autoStopDisposable);
 
 	void showMicrophonePermissionGuide(context.globalState);
-
-	if (!featureConfig.recording.useMockRecorder) {
-		void ensureSoxInstalled();
-	}
 
 	const startCommand = vscode.commands.registerCommand("voicedev.startRecording", () => {
 		if (recorder.isRecording()) {
@@ -69,23 +64,6 @@ export function activate(context: vscode.ExtensionContext) {
 function cleanupRecordingState(statusBar: StatusBarManager): void {
 	statusBar.setIdle();
 	void vscode.commands.executeCommand("setContext", RECORDING_CONTEXT_KEY, false);
-}
-
-async function ensureSoxInstalled(): Promise<void> {
-	const installed = await checkSoxInstalled();
-	if (installed) {
-		return;
-	}
-
-	const instructions = getSoxInstallInstructions();
-	const choice = await vscode.window.showWarningMessage(
-		`VoiceDev needs sox installed for microphone capture. ${instructions}`,
-		"Learn how to install sox",
-	);
-
-	if (choice) {
-		void vscode.env.openExternal(vscode.Uri.parse("https://sox.sourceforge.net/"));
-	}
 }
 
 export function getLastCapturedBuffer(): Buffer | undefined {

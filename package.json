@@ -122,6 +122,6 @@
 		]
 	},
 	"dependencies": {
-		"node-record-lpcm16": "^1.0.1"
+		"pvrecorder-node": "^1.2.2"
 	}
 }
