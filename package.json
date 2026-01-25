@@ -23,13 +23,20 @@
 		"type": "git",
 		"url": "https://github.com/mohitSharma74/voicedev"
 	},
-	"activationEvents": [],
+	"activationEvents": [
+		"onCommand:voicedev.startRecording",
+		"onCommand:voicedev.stopRecording"
+	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "voicedev.helloWorld",
-				"title": "VoiceDev: Hello World"
+				"command": "voicedev.startRecording",
+				"title": "VoiceDev: Start Recording"
+			},
+			{
+				"command": "voicedev.stopRecording",
+				"title": "VoiceDev: Stop Recording"
 			}
 		],
 		"configuration": {
@@ -61,7 +68,21 @@
 					"description": "LLM model to use (provider-specific)"
 				}
 			}
-		}
+		},
+		"keybindings": [
+			{
+				"command": "voicedev.startRecording",
+				"key": "ctrl+shift+v",
+				"mac": "cmd+shift+v",
+				"when": "!voicedev.isRecording"
+			},
+			{
+				"command": "voicedev.stopRecording",
+				"key": "ctrl+shift+v",
+				"mac": "cmd+shift+v",
+				"when": "voicedev.isRecording"
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
@@ -99,5 +120,8 @@
 		"**/*.{json,md,yml,yaml,css,scss,html}": [
 			"prettier --write"
 		]
+	},
+	"dependencies": {
+		"node-record-lpcm16": "^1.0.1"
 	}
 }

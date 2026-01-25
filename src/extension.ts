@@ -1,26 +1,97 @@
 import * as vscode from "vscode";
+import { createRecorder } from "./services/recorderFactory";
+import { StatusBarManager } from "./ui/statusBar";
+import { checkSoxInstalled, getSoxInstallInstructions } from "./utils/systemCheck";
+import { showMicrophonePermissionGuide } from "./utils/permissionHelper";
+import { featureConfig } from "./config/feature.config";
 
-/**
- * Called when the extension is activated.
- * The extension is activated the very first time a command is executed.
- */
+const RECORDING_CONTEXT_KEY = "voicedev.isRecording";
+let lastCapturedBuffer: Buffer | undefined;
+
 export function activate(context: vscode.ExtensionContext) {
 	console.log("VoiceDev extension is now active!");
 
-	// Register the hello world command - this will be replaced with voice commands in Phase 2
-	const helloWorldDisposable = vscode.commands.registerCommand("voicedev.helloWorld", () => {
-		void vscode.window.showInformationMessage("Hello from VoiceDev! 🎤 Voice commands coming soon...");
+	const statusBar = new StatusBarManager();
+	context.subscriptions.push(statusBar);
+
+	const recorder = createRecorder();
+	context.subscriptions.push(new vscode.Disposable(() => recorder.dispose()));
+
+	const autoStopDisposable = recorder.onAutoStop(() => {
+		cleanupRecordingState(statusBar);
+		void vscode.window.showInformationMessage(
+			`Recording stopped after ${featureConfig.recording.maxDurationSeconds}s maximum duration.`,
+		);
+	});
+	context.subscriptions.push(autoStopDisposable);
+
+	void showMicrophonePermissionGuide(context.globalState);
+
+	if (!featureConfig.recording.useMockRecorder) {
+		void ensureSoxInstalled();
+	}
+
+	const startCommand = vscode.commands.registerCommand("voicedev.startRecording", () => {
+		if (recorder.isRecording()) {
+			return;
+		}
+
+		try {
+			recorder.startRecording();
+			statusBar.setRecording();
+			void vscode.commands.executeCommand("setContext", RECORDING_CONTEXT_KEY, true);
+		} catch (error) {
+			cleanupRecordingState(statusBar);
+			void vscode.window.showErrorMessage("Unable to start recording. Please check your microphone.");
+			console.error(error);
+		}
 	});
 
-	context.subscriptions.push(helloWorldDisposable);
+	const stopCommand = vscode.commands.registerCommand("voicedev.stopRecording", async () => {
+		if (!recorder.isRecording()) {
+			return;
+		}
 
-	// Show activation message in status bar briefly
-	vscode.window.setStatusBarMessage("$(mic) VoiceDev Ready", 3000);
+		try {
+			const buffer = await recorder.stopRecording();
+			lastCapturedBuffer = buffer;
+			cleanupRecordingState(statusBar);
+			void vscode.window.showInformationMessage("Recording captured. Transcription will be available soon.");
+		} catch (error) {
+			void vscode.window.showErrorMessage("Failed to stop recording.");
+			console.error(error);
+		}
+	});
+
+	context.subscriptions.push(startCommand, stopCommand);
 }
 
-/**
- * Called when the extension is deactivated.
- */
+function cleanupRecordingState(statusBar: StatusBarManager): void {
+	statusBar.setIdle();
+	void vscode.commands.executeCommand("setContext", RECORDING_CONTEXT_KEY, false);
+}
+
+async function ensureSoxInstalled(): Promise<void> {
+	const installed = await checkSoxInstalled();
+	if (installed) {
+		return;
+	}
+
+	const instructions = getSoxInstallInstructions();
+	const choice = await vscode.window.showWarningMessage(
+		`VoiceDev needs sox installed for microphone capture. ${instructions}`,
+		"Learn how to install sox",
+	);
+
+	if (choice) {
+		void vscode.env.openExternal(vscode.Uri.parse("https://sox.sourceforge.net/"));
+	}
+}
+
+export function getLastCapturedBuffer(): Buffer | undefined {
+	return lastCapturedBuffer;
+}
+
 export function deactivate() {
 	console.log("VoiceDev extension deactivated");
 }
