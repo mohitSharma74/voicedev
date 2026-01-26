@@ -14,7 +14,15 @@
 		"moduleResolution": "Node16",
 		"esModuleInterop": true,
 		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true
+		"forceConsistentCasingInFileNames": true,
+		"baseUrl": ".",
+		"paths": {
+			"@services/*": ["src/services/*"],
+			"@utils/*": ["src/utils/*"],
+			"@types/*": ["src/types/*"],
+			"@config/*": ["src/config/*"],
+			"@ui/*": ["src/ui/*"]
+		}
 	},
 	"exclude": ["node_modules", ".vscode-test", "out", "test"]
 }

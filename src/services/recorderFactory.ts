@@ -1,7 +1,7 @@
-import { featureConfig } from "../config/feature.config";
+import { featureConfig } from "@config/feature.config";
 import * as vscode from "vscode";
-import { MockVoiceRecorder } from "./mockRecorder";
-import { IVoiceRecorder } from "./IVoiceRecorder";
+import { MockVoiceRecorder } from "@services/mockRecorder";
+import { IVoiceRecorder } from "@services/IVoiceRecorder";
 
 export function createRecorder(context: vscode.ExtensionContext): IVoiceRecorder {
 	if (featureConfig.recording.useMockRecorder) {

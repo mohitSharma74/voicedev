@@ -1,15 +1,15 @@
 import * as vscode from "vscode";
 import * as fs from "fs/promises";
 import * as path from "path";
-import { createRecorder } from "./services/recorderFactory";
-import { StatusBarManager } from "./ui/statusBar";
-import { showMicrophonePermissionGuide } from "./utils/permissionHelper";
-import { featureConfig } from "./config/feature.config";
-import { encodeWav, calculateDuration } from "./utils/wavEncoder";
-import { audioPlayer } from "./utils/audioPlayer";
-import { TranscriptionService } from "./services/transcriptionService";
-import { SecretStorageHelper } from "./utils/secretStorage";
-import { insertOrSendText } from "./utils/textInsertion";
+import { createRecorder } from "@services/recorderFactory";
+import { StatusBarManager } from "@ui/statusBar";
+import { showMicrophonePermissionGuide } from "@utils/permissionHelper";
+import { featureConfig } from "@config/feature.config";
+import { encodeWav, calculateDuration } from "@utils/wavEncoder";
+import { audioPlayer } from "@utils/audioPlayer";
+import { TranscriptionService } from "@services/transcriptionService";
+import { SecretStorageHelper } from "@utils/secretStorage";
+import { insertOrSendText } from "@utils/textInsertion";
 
 const RECORDING_CONTEXT_KEY = "voicedev.isRecording";
 let lastCapturedBuffer: Buffer | undefined;

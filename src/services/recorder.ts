@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { PvRecorder } from "@picovoice/pvrecorder-node";
-import { featureConfig } from "../config/feature.config";
-import { IVoiceRecorder } from "./IVoiceRecorder";
+import { featureConfig } from "@config/feature.config";
+import { IVoiceRecorder } from "@services/IVoiceRecorder";
 
 export class VoiceRecorder implements IVoiceRecorder {
 	private buffers: Buffer[] = [];
