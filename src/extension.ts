@@ -9,6 +9,7 @@ import { encodeWav, calculateDuration } from "./utils/wavEncoder";
 import { audioPlayer } from "./utils/audioPlayer";
 import { TranscriptionService } from "./services/transcriptionService";
 import { SecretStorageHelper } from "./utils/secretStorage";
+import { insertOrSendText } from "./utils/textInsertion";
 
 const RECORDING_CONTEXT_KEY = "voicedev.isRecording";
 let lastCapturedBuffer: Buffer | undefined;
@@ -114,12 +115,23 @@ export function activate(context: vscode.ExtensionContext) {
 					const text = await transcriptionService.transcribe(wavBuffer);
 					console.log("Transcription:", text);
 
-					// show the transcription in a message box
-					void vscode.window.showInformationMessage(text);
+					// Phase 1.4: Insert text into editor or send to terminal
+					try {
+						await insertOrSendText(text);
 
-					// Phase 1.3: Show notification with result
-					// Phase 1.4 will insert into editor
-					void vscode.window.showInformationMessage(`Transcription: ${text}`);
+						// Determine context for notification message
+						const context = vscode.window.activeTextEditor
+							? "editor"
+							: vscode.window.activeTerminal
+								? "terminal"
+								: "unknown";
+
+						const preview = text.length > 50 ? `${text.substring(0, 50)}...` : text;
+						void vscode.window.showInformationMessage(`Inserted to ${context}: "${preview}"`);
+					} catch (error: unknown) {
+						const errorMessage = error instanceof Error ? error.message : "Unknown error";
+						void vscode.window.showErrorMessage(`Failed to insert text: ${errorMessage}`);
+					}
 				} catch (error: unknown) {
 					const errorMessage = error instanceof Error ? error.message : "Unknown error";
 					void vscode.window.showErrorMessage(`Transcription failed: ${errorMessage}`);
