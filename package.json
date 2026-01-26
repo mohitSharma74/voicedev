@@ -52,6 +52,10 @@
 			{
 				"command": "voicedev.clearApiKey",
 				"title": "VoiceDev: Clear API Key"
+			},
+			{
+				"command": "voicedev.listCommands",
+				"title": "VoiceDev: List Voice Commands"
 			}
 		],
 		"configuration": {
@@ -148,6 +152,7 @@
 	},
 	"dependencies": {
 		"@picovoice/pvrecorder-node": "^1.2.2",
+		"fuse.js": "^7.1.0",
 		"groq-sdk": "^0.37.0"
 	}
 }

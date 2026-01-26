@@ -17,11 +17,13 @@
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
 		"paths": {
+			"@/*": ["src/*"],
 			"@services/*": ["src/services/*"],
 			"@utils/*": ["src/utils/*"],
 			"@types/*": ["src/types/*"],
 			"@config/*": ["src/config/*"],
-			"@ui/*": ["src/ui/*"]
+			"@ui/*": ["src/ui/*"],
+			"@commands/*": ["src/commands/*"]
 		}
 	},
 	"exclude": ["node_modules", ".vscode-test", "out", "test"]

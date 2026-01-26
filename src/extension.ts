@@ -10,6 +10,9 @@ import { audioPlayer } from "@utils/audioPlayer";
 import { TranscriptionService } from "@services/transcriptionService";
 import { SecretStorageHelper } from "@utils/secretStorage";
 import { insertOrSendText } from "@utils/textInsertion";
+import { registerAllCommands, getCommandRegistry } from "@commands/index";
+import { initCommandParser } from "@services/commandParser";
+import { getCommandExecutor } from "@services/commandExecutor";
 
 const RECORDING_CONTEXT_KEY = "voicedev.isRecording";
 let lastCapturedBuffer: Buffer | undefined;
@@ -28,6 +31,22 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const transcriptionService = new TranscriptionService();
 	context.subscriptions.push(new vscode.Disposable(() => transcriptionService.dispose()));
+
+	// Initialize voice command system
+	registerAllCommands();
+	const commandExecutor = getCommandExecutor();
+
+	// Initialize command parser asynchronously (loads fuse.js ESM module)
+	let commandParser: Awaited<ReturnType<typeof initCommandParser>> | null = null;
+	initCommandParser()
+		.then((parser) => {
+			commandParser = parser;
+			commandParser.refresh(); // Initialize fuse.js with registered commands
+			console.log("VoiceDev command parser initialized with", parser.isReady() ? "success" : "failure");
+		})
+		.catch((error) => {
+			console.error("Failed to initialize command parser:", error);
+		});
 
 	const autoStopDisposable = recorder.onAutoStop(() => {
 		// Auto-stop triggers the stop command logic flow indirectly
@@ -115,22 +134,46 @@ export function activate(context: vscode.ExtensionContext) {
 					const text = await transcriptionService.transcribe(wavBuffer);
 					console.log("Transcription:", text);
 
-					// Phase 1.4: Insert text into editor or send to terminal
-					try {
-						await insertOrSendText(text);
+					// Phase 2.1: Check for voice commands first (if parser is ready)
+					const parsedResult = commandParser?.isReady() ? commandParser.parse(text) : null;
+					if (parsedResult) {
+						console.log("Command parse result:", {
+							type: parsedResult.type,
+							confidence: parsedResult.confidence.toFixed(2),
+							matchedTrigger: parsedResult.matchedTrigger,
+						});
+					}
 
-						// Determine context for notification message
-						const context = vscode.window.activeTextEditor
-							? "editor"
-							: vscode.window.activeTerminal
-								? "terminal"
-								: "unknown";
+					if (parsedResult?.type === "command" && parsedResult.command) {
+						// Execute the voice command
+						try {
+							const execResult = await commandExecutor.execute(parsedResult);
+							if (execResult && !execResult.success) {
+								console.error("Command execution failed:", execResult.error);
+							}
+						} catch (error: unknown) {
+							const errorMessage = error instanceof Error ? error.message : "Unknown error";
+							void vscode.window.showErrorMessage(`Command execution failed: ${errorMessage}`);
+						}
+					} else {
+						// Fallback to dictation: Insert text into editor or send to terminal
+						// (also used if command parser is not ready yet)
+						try {
+							await insertOrSendText(text);
 
-						const preview = text.length > 50 ? `${text.substring(0, 50)}...` : text;
-						void vscode.window.showInformationMessage(`Inserted to ${context}: "${preview}"`);
-					} catch (error: unknown) {
-						const errorMessage = error instanceof Error ? error.message : "Unknown error";
-						void vscode.window.showErrorMessage(`Failed to insert text: ${errorMessage}`);
+							// Determine context for notification message
+							const insertContext = vscode.window.activeTextEditor
+								? "editor"
+								: vscode.window.activeTerminal
+									? "terminal"
+									: "unknown";
+
+							const preview = text.length > 50 ? `${text.substring(0, 50)}...` : text;
+							void vscode.window.showInformationMessage(`Inserted to ${insertContext}: "${preview}"`);
+						} catch (error: unknown) {
+							const errorMessage = error instanceof Error ? error.message : "Unknown error";
+							void vscode.window.showErrorMessage(`Failed to insert text: ${errorMessage}`);
+						}
 					}
 				} catch (error: unknown) {
 					const errorMessage = error instanceof Error ? error.message : "Unknown error";
@@ -230,6 +273,17 @@ export function activate(context: vscode.ExtensionContext) {
 		void vscode.window.showInformationMessage(`${provider.toUpperCase()} API key removed.`);
 	});
 
+	// List Voice Commands - opens quick pick with all available commands
+	const listCommandsCmd = vscode.commands.registerCommand("voicedev.listCommands", async () => {
+		const registry = getCommandRegistry();
+		const listCommand = registry.findById("list-commands");
+		if (listCommand) {
+			await listCommand.execute();
+		} else {
+			void vscode.window.showWarningMessage("Voice commands not loaded yet. Please try again.");
+		}
+	});
+
 	context.subscriptions.push(
 		startCommand,
 		stopCommand,
@@ -237,6 +291,7 @@ export function activate(context: vscode.ExtensionContext) {
 		saveCommand,
 		setApiKeyCommand,
 		clearApiKeyCommand,
+		listCommandsCmd,
 	);
 }
 

@@ -1,0 +1,68 @@
+/**
+ * Voice Command Types
+ * Defines the interfaces for the voice command system
+ */
+
+/**
+ * Categories for organizing voice commands
+ */
+export type CommandCategory = "editor" | "git" | "terminal" | "navigation" | "system";
+
+/**
+ * Represents a voice command that can be executed
+ */
+export interface VoiceCommand {
+	/** Unique identifier for the command */
+	id: string;
+
+	/** Array of trigger phrases that activate this command */
+	triggers: string[];
+
+	/** Human-readable description of what the command does */
+	description: string;
+
+	/** Category for organizing commands */
+	category: CommandCategory;
+
+	/** The action to perform when the command is triggered */
+	execute: () => Promise<void>;
+}
+
+/**
+ * Result of parsing a voice transcription
+ */
+export interface ParsedResult {
+	/** Whether this was recognized as a command or should be treated as dictation */
+	type: "command" | "dictation";
+
+	/** The matched command (only present if type is 'command') */
+	command?: VoiceCommand;
+
+	/** Confidence score from 0 to 1 (1 = perfect match) */
+	confidence: number;
+
+	/** The original transcribed text */
+	originalText: string;
+
+	/** The specific trigger phrase that was matched (if any) */
+	matchedTrigger?: string;
+}
+
+/**
+ * Configuration for the command parser
+ */
+export interface CommandParserConfig {
+	/** Confidence threshold (0-1) above which a match is considered a command */
+	confidenceThreshold: number;
+
+	/** Fuse.js threshold for fuzzy matching (0 = exact, 1 = match anything) */
+	fuseThreshold: number;
+}
+
+/**
+ * Default parser configuration
+ */
+export const DEFAULT_PARSER_CONFIG: CommandParserConfig = {
+	confidenceThreshold: 0.7,
+	fuseThreshold: 0.3,
+};
