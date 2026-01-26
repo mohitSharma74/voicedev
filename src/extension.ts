@@ -123,7 +123,15 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
-	context.subscriptions.push(startCommand, stopCommand, saveCommand);
+	const toggleCommand = vscode.commands.registerCommand("voicedev.toggleRecording", async () => {
+		if (recorder.isRecording()) {
+			await vscode.commands.executeCommand("voicedev.stopRecording");
+		} else {
+			await vscode.commands.executeCommand("voicedev.startRecording");
+		}
+	});
+
+	context.subscriptions.push(startCommand, stopCommand, toggleCommand, saveCommand);
 }
 
 function cleanupRecordingState(statusBar: StatusBarManager): void {

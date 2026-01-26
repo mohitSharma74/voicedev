@@ -24,8 +24,7 @@
 		"url": "https://github.com/mohitSharma74/voicedev"
 	},
 	"activationEvents": [
-		"onCommand:voicedev.startRecording",
-		"onCommand:voicedev.stopRecording"
+		"onStartupFinished"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -37,6 +36,10 @@
 			{
 				"command": "voicedev.stopRecording",
 				"title": "VoiceDev: Stop Recording"
+			},
+			{
+				"command": "voicedev.toggleRecording",
+				"title": "VoiceDev: Toggle Recording"
 			},
 			{
 				"command": "voicedev.saveRecording",

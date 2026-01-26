@@ -6,8 +6,8 @@ export class StatusBarManager {
 	private recordingSeconds = 0;
 
 	constructor() {
-		this.item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-		this.item.command = "workbench.action.showCommands";
+		this.item = vscode.window.createStatusBarItem("voicedev.statusBar", vscode.StatusBarAlignment.Right, 50);
+		this.item.command = "voicedev.toggleRecording";
 		this.setIdle();
 		this.item.show();
 	}
@@ -16,14 +16,16 @@ export class StatusBarManager {
 		this.clearInterval();
 		this.recordingSeconds = 0;
 		this.item.text = "$(mic) VoiceDev";
-		this.item.tooltip = "VoiceDev ready — press Ctrl+Shift+V (Cmd+Shift+V on macOS) to start recording";
+		this.item.tooltip = "Click to start recording (or press Ctrl+Shift+V / Cmd+Shift+V)";
+		this.item.backgroundColor = undefined;
 	}
 
 	setRecording(): void {
 		this.clearInterval();
 		this.recordingSeconds = 0;
 		this.item.text = "$(pulse) Recording... 0s";
-		this.item.tooltip = "Recording audio... release the hotkey to stop";
+		this.item.tooltip = "Recording in progress — click to stop";
+		this.item.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
 		this.recordingInterval = setInterval(() => {
 			this.recordingSeconds += 1;
 			this.item.text = `$(pulse) Recording... ${this.recordingSeconds}s`;
