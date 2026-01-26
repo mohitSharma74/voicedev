@@ -1,6 +1,6 @@
 import Groq, { toFile } from "groq-sdk";
-import { ITranscriptionProvider } from "./ITranscriptionProvider";
-import { SecretStorageHelper } from "../../utils/secretStorage";
+import { ITranscriptionProvider } from "@services/providers/ITranscriptionProvider";
+import { SecretStorageHelper } from "@utils/secretStorage";
 
 export class GroqProvider implements ITranscriptionProvider {
 	private groq: Groq | null = null;

@@ -1,5 +1,5 @@
-import { ITranscriptionProvider } from "./providers/ITranscriptionProvider";
-import { GroqProvider } from "./providers/groqProvider";
+import { ITranscriptionProvider } from "@services/providers/ITranscriptionProvider";
+import { GroqProvider } from "@services/providers/groqProvider";
 
 export class TranscriptionService {
 	private provider: ITranscriptionProvider;
