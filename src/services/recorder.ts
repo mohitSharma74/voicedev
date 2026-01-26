@@ -11,6 +11,7 @@ export class VoiceRecorder implements IVoiceRecorder {
 	private timeout: NodeJS.Timeout | undefined;
 	private maxDurationMs = featureConfig.recording.maxDurationSeconds * 1000;
 	private readonly frameLength = 512;
+	private capturePromise: Promise<void> | null = null;
 
 	get onAutoStop(): vscode.Event<void> {
 		return this.autoStopEmitter.event;
@@ -21,34 +22,67 @@ export class VoiceRecorder implements IVoiceRecorder {
 			return;
 		}
 
-		this.buffers = [];
-		// Use default system device by omitting deviceIndex parameter
-		this.recorder = new PvRecorder(this.frameLength);
-		this.recorder.start();
-		this.isActive = true;
-		void this.captureFrames();
+		try {
+			this.buffers = [];
+			// Use default system device by omitting deviceIndex parameter
+			this.recorder = new PvRecorder(this.frameLength);
+			this.recorder.start();
+			this.isActive = true;
+			this.capturePromise = this.captureFrames();
 
-		this.timeout = setTimeout(() => {
-			this.autoStopEmitter.fire();
-			void this.stopRecording();
-		}, this.maxDurationMs);
+			this.timeout = setTimeout(() => {
+				this.autoStopEmitter.fire();
+				void this.stopRecording();
+			}, this.maxDurationMs);
+		} catch (error) {
+			// Clean up if initialization fails
+			if (this.recorder) {
+				try {
+					this.recorder.release();
+				} catch {
+					// Ignore release errors
+				}
+				this.recorder = null;
+			}
+			this.isActive = false;
+			throw error;
+		}
 	}
 
-	stopRecording(): Promise<Buffer> {
+	async stopRecording(): Promise<Buffer> {
 		this.clearTimeout();
 
 		if (!this.recorder) {
-			return Promise.resolve(Buffer.alloc(0));
+			return Buffer.alloc(0);
 		}
 
+		// Signal shutdown
 		this.isActive = false;
-		this.recorder.stop();
-		this.recorder.release();
+
+		// Stop the hardware (signals to stop, but doesn't release yet)
+		try {
+			this.recorder.stop();
+		} catch (error) {
+			console.error("Error stopping recorder:", error);
+		}
+
+		// Wait for captureFrames loop to complete safely
+		if (this.capturePromise) {
+			await this.capturePromise;
+			this.capturePromise = null;
+		}
+
+		// Now safe to release resources
+		try {
+			this.recorder.release();
+		} catch (error) {
+			console.error("Error releasing recorder:", error);
+		}
 		this.recorder = null;
 
 		const buffer = Buffer.concat(this.buffers);
 		this.buffers = [];
-		return Promise.resolve(buffer);
+		return buffer;
 	}
 
 	isRecording(): boolean {
@@ -74,8 +108,42 @@ export class VoiceRecorder implements IVoiceRecorder {
 				this.buffers.push(this.frameToBuffer(frame));
 				console.log("Captured frame ~", this.buffers.length);
 			} catch (error) {
+				// Determine if this is a shutdown-related error vs a real error
+				const errorMessage = error instanceof Error ? error.message : String(error);
+				const isShutdownError =
+					!this.isActive ||
+					errorMessage.includes("InvalidStateError") ||
+					errorMessage.includes("failed to read");
+
+				if (isShutdownError) {
+					// This is expected during shutdown - exit silently
+					break;
+				}
+
+				// Only log/handle REAL errors (not shutdown errors)
 				console.error("VoiceRecorder frame capture error", error);
+
+				// Only clean up for REAL errors (not shutdown errors)
 				this.isActive = false;
+				if (this.recorder) {
+					try {
+						this.recorder.stop();
+						this.recorder.release();
+					} catch {
+						// Ignore cleanup errors
+					}
+					this.recorder = null;
+				}
+
+				// Show user-facing error for real microphone issues
+				void vscode.window.showErrorMessage(
+					"Microphone error during recording. Please check:\n" +
+						"1. Microphone permissions are granted for VS Code\n" +
+						"2. No other app is using the microphone\n" +
+						"3. Your microphone is connected and working",
+				);
+
+				break; // Exit loop
 			}
 		}
 	}
