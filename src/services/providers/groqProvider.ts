@@ -23,7 +23,7 @@ export class GroqProvider implements ITranscriptionProvider {
 
 			const transcription = await this.groq.audio.transcriptions.create({
 				file,
-				model: "whisper-large-v3",
+				model: "whisper-large-v3-turbo",
 				language: "en",
 				response_format: "text",
 			});

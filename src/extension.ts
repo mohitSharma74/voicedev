@@ -112,6 +112,10 @@ export function activate(context: vscode.ExtensionContext) {
 					});
 
 					const text = await transcriptionService.transcribe(wavBuffer);
+					console.log("Transcription:", text);
+
+					// show the transcription in a message box
+					void vscode.window.showInformationMessage(text);
 
 					// Phase 1.3: Show notification with result
 					// Phase 1.4 will insert into editor
