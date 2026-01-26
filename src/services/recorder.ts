@@ -21,17 +21,31 @@ export class VoiceRecorder implements IVoiceRecorder {
 			return;
 		}
 
-		this.buffers = [];
-		// Use default system device by omitting deviceIndex parameter
-		this.recorder = new PvRecorder(this.frameLength);
-		this.recorder.start();
-		this.isActive = true;
-		void this.captureFrames();
+		try {
+			this.buffers = [];
+			// Use default system device by omitting deviceIndex parameter
+			this.recorder = new PvRecorder(this.frameLength);
+			this.recorder.start();
+			this.isActive = true;
+			void this.captureFrames();
 
-		this.timeout = setTimeout(() => {
-			this.autoStopEmitter.fire();
-			void this.stopRecording();
-		}, this.maxDurationMs);
+			this.timeout = setTimeout(() => {
+				this.autoStopEmitter.fire();
+				void this.stopRecording();
+			}, this.maxDurationMs);
+		} catch (error) {
+			// Clean up if initialization fails
+			if (this.recorder) {
+				try {
+					this.recorder.release();
+				} catch {
+					// Ignore release errors
+				}
+				this.recorder = null;
+			}
+			this.isActive = false;
+			throw error;
+		}
 	}
 
 	stopRecording(): Promise<Buffer> {
@@ -76,6 +90,28 @@ export class VoiceRecorder implements IVoiceRecorder {
 			} catch (error) {
 				console.error("VoiceRecorder frame capture error", error);
 				this.isActive = false;
+
+				// Clean up the recorder on error
+				if (this.recorder) {
+					try {
+						this.recorder.stop();
+						this.recorder.release();
+					} catch {
+						// Ignore cleanup errors
+					}
+					this.recorder = null;
+				}
+
+				// Show user-friendly error message
+				const errorMessage = error instanceof Error ? error.message : String(error);
+				if (errorMessage.includes("InvalidStateError") || errorMessage.includes("failed to read")) {
+					void vscode.window.showErrorMessage(
+						"Microphone access failed. Please check:\n" +
+							"1. Microphone permissions are granted for VS Code\n" +
+							"2. No other app is using the microphone\n" +
+							"3. Your microphone is connected and working",
+					);
+				}
 			}
 		}
 	}

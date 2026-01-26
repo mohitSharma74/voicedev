@@ -32,6 +32,13 @@ export class StatusBarManager {
 		}, 1000);
 	}
 
+	setTranscribing(): void {
+		this.clearInterval();
+		this.item.text = "$(sync~spin) Transcribing...";
+		this.item.tooltip = "Transcribing audio to text...";
+		this.item.backgroundColor = undefined;
+	}
+
 	dispose(): void {
 		this.clearInterval();
 		this.item.dispose();
