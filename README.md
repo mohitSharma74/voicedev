@@ -44,7 +44,8 @@ Configure VoiceDev in your VS Code settings:
 {
 "voicedev.stt.provider": "groq",
 "voicedev.llm.provider": "openrouter",
-"voicedev.llm.model": "anthropic/claude-3-haiku-20240307"
+"voicedev.llm.model": "anthropic/claude-3-haiku-20240307",
+"voicedev.audio.feedbackSounds": true
 }
 \`\`\`
 

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Audio feedback (start/stop chimes) for recording actions
 - Initial extension scaffold
 - Hello World command for testing
 - TypeScript configuration
