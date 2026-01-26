@@ -6,6 +6,7 @@ import { StatusBarManager } from "./ui/statusBar";
 import { showMicrophonePermissionGuide } from "./utils/permissionHelper";
 import { featureConfig } from "./config/feature.config";
 import { encodeWav, calculateDuration } from "./utils/wavEncoder";
+import { audioPlayer } from "./utils/audioPlayer";
 
 const RECORDING_CONTEXT_KEY = "voicedev.isRecording";
 let lastCapturedBuffer: Buffer | undefined;
@@ -21,6 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const autoStopDisposable = recorder.onAutoStop(() => {
 		cleanupRecordingState(statusBar);
+		void audioPlayer.play(context, "stop");
 		void vscode.window.showInformationMessage(
 			`Recording stopped after ${featureConfig.recording.maxDurationSeconds}s maximum duration.`,
 		);
@@ -36,6 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		try {
 			recorder.startRecording();
+			void audioPlayer.play(context, "start");
 			statusBar.setRecording();
 			void vscode.commands.executeCommand("setContext", RECORDING_CONTEXT_KEY, true);
 		} catch (error) {
@@ -52,6 +55,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		try {
 			const buffer = await recorder.stopRecording();
+			void audioPlayer.play(context, "stop");
 			lastCapturedBuffer = buffer;
 			cleanupRecordingState(statusBar);
 

@@ -73,6 +73,11 @@
 					"type": "string",
 					"default": "anthropic/claude-3-haiku-20240307",
 					"description": "LLM model to use (provider-specific)"
+				},
+				"voicedev.audio.feedbackSounds": {
+					"type": "boolean",
+					"default": true,
+					"description": "Play audio feedback when starting or stopping recording"
 				}
 			}
 		},
