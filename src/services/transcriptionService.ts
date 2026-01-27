@@ -1,16 +1,59 @@
+import * as vscode from "vscode";
 import { ITranscriptionProvider } from "@services/providers/ITranscriptionProvider";
 import { GroqProvider } from "@services/providers/groqProvider";
+import { LocalWhisperProvider } from "@services/providers/localWhisperProvider";
+
+export type SttProviderType = "groq" | "openai" | "local";
 
 export class TranscriptionService {
 	private provider: ITranscriptionProvider;
+	private context: vscode.ExtensionContext;
+	private currentProviderType: SttProviderType;
+	private configChangeDisposable: vscode.Disposable;
 
-	constructor() {
-		// In the future, we can switch providers based on config
-		// const config = vscode.workspace.getConfiguration('voicedev');
-		// const providerType = config.get<string>('stt.provider') || 'groq';
+	constructor(context: vscode.ExtensionContext) {
+		this.context = context;
 
-		// Defaulting to Groq for now as per Phase 1.3 plan
-		this.provider = new GroqProvider();
+		const config = vscode.workspace.getConfiguration("voicedev");
+		this.currentProviderType = config.get<SttProviderType>("stt.provider", "groq");
+		this.provider = this.createProvider(this.currentProviderType);
+
+		// Listen for configuration changes
+		this.configChangeDisposable = vscode.workspace.onDidChangeConfiguration((e) => {
+			if (e.affectsConfiguration("voicedev.stt.provider")) {
+				this.switchProvider();
+			}
+		});
+	}
+
+	private createProvider(type: SttProviderType): ITranscriptionProvider {
+		switch (type) {
+			case "local":
+				return new LocalWhisperProvider(this.context);
+			case "openai":
+				// Future: OpenAI provider
+				console.warn("OpenAI provider not yet implemented, falling back to Groq");
+				return new GroqProvider();
+			case "groq":
+			default:
+				return new GroqProvider();
+		}
+	}
+
+	private switchProvider(): void {
+		const config = vscode.workspace.getConfiguration("voicedev");
+		const newType = config.get<SttProviderType>("stt.provider", "groq");
+
+		if (newType !== this.currentProviderType) {
+			// Dispose old provider
+			this.provider.dispose();
+
+			// Create new provider
+			this.currentProviderType = newType;
+			this.provider = this.createProvider(newType);
+
+			console.log(`[TranscriptionService] Switched to ${this.provider.getName()}`);
+		}
 	}
 
 	async transcribe(audioBuffer: Buffer): Promise<string> {
@@ -21,7 +64,12 @@ export class TranscriptionService {
 		return await this.provider.validateApiKey();
 	}
 
+	getProviderName(): string {
+		return this.provider.getName();
+	}
+
 	dispose(): void {
+		this.configChangeDisposable.dispose();
 		this.provider.dispose();
 	}
 }
