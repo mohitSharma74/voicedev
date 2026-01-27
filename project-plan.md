@@ -226,69 +226,76 @@ Insert text at cursor position:
 
 ---
 
-### Week 2: Voice Commands & Git Integration (Feb 1 - Feb 7)
+### Week 2: Copilot CLI & Git Integration (Feb 1 - Feb 7)
 
-**Goal**: 10-15 voice commands + git commit generator
+**Goal**: Copilot CLI voice commands + git workflow via voice
 
-#### Phase 2.1: Command System (Days 8-9)
+#### Phase 2.1: Command System (Days 8-9) ✅ COMPLETED
 
-- [ ] Design command registry architecture
-- [ ] Implement command parser (voice → intent)
-- [ ] Create command executor
-- [ ] Add fuzzy matching for commands
-- [ ] Test command recognition accuracy
+- [x] Design command registry architecture
+- [x] Implement command parser (voice → intent)
+- [x] Create command executor
+- [x] Add fuzzy matching for commands
+- [x] Test command recognition accuracy
 
 **Deliverables**:
 
-- Voice → command mapping system
+- Voice → command mapping system ✅
 - 5 basic commands implemented:
-    - "save all"
-    - "format document"
-    - "new terminal"
-    - "git status"
-    - "close editor"
+    - "save all" ✅
+    - "format document" ✅
+    - "new terminal" ✅
+    - "git status" ✅
+    - "close editor" ✅
 
-#### Phase 2.2: Developer Commands (Days 10-11)
+#### Phase 2.2: Copilot CLI Integration (Days 10-11) ⭐ COMPETITION CRITICAL
 
-- [ ] "console log" implementation
-- [ ] "add comment" with language detection
-- [ ] "run task" integration
-- [ ] "search files" command
-- [ ] "toggle terminal" command
-
-**Deliverables**:
-
-- 10 total commands implemented
-- Language-aware command behavior
-- Command help/list functionality
-
-#### Phase 2.3: Git Commit Generator (Days 12-13)
-
-- [ ] Get current git diff
-- [ ] Extract changed files and context
-- [ ] Generate commit message (via OpenAI)
-- [ ] Support conventional commits format
-- [ ] Preview UI for commit messages
-- [ ] Commit execution
+- [ ] Implement terminal helper (`ctx.terminal.run()`)
+- [ ] Implement Copilot CLI detection (`copilot --version`)
+- [ ] Add Copilot availability guard + error UX with install link
+- [ ] Add wildcard pattern matching (`*` extraction for args)
+- [ ] Create `CopilotExecutors`:
+    - "ask copilot explain \*" → `copilot explain "<text>"`
+    - "ask copilot explain file" → `copilot explain "<filepath>"`
+    - "ask copilot write commit message" → `copilot commit`
 
 **Deliverables**:
 
-- Voice → git commit working
-- Conventional commits support
-- Preview before commit
+- Copilot CLI commands working via voice
+- Pattern matching with wildcard args
+- Graceful fallback when Copilot CLI not installed
 
-#### Phase 2.4: Settings & Configuration (Day 14)
+#### Phase 2.3: Git & Shell Commands (Days 12-13)
 
-- [ ] Settings UI (webview or JSON schema)
-- [ ] API key secure storage
-- [ ] Keyboard shortcut customization
+- [ ] Create `ShellExecutors` for terminal commands:
+    - "git status" → runs `git status` in terminal
+    - "git pull" → runs `git pull` in terminal
+    - "git push" → runs `git push` in terminal
+    - "git commit" → runs `git commit` (opens editor)
+    - "git commit message \*" → runs `git commit -m "<message>"`
+- [ ] Add editor navigation commands:
+    - "open file \*" → opens file by name
+    - "go to line \*" → navigates to line number
+- [ ] Update existing commands to use new executor signature with `ExecutionContext`
+
+**Deliverables**:
+
+- Full git workflow via voice (status → commit → push)
+- Shell commands run directly in integrated terminal
+- Pattern-based arg extraction working
+
+#### Phase 2.4: Settings & Polish (Day 14)
+
+- [ ] Copilot CLI detection on extension activation
+- [ ] Settings for Copilot CLI path (if non-standard install)
+- [ ] API key secure storage (existing - verify working)
 - [ ] Command enable/disable toggles
-- [ ] Commit style preferences
+- [ ] Test full demo workflow end-to-end
 
 **Deliverables**:
 
-- Week 2 milestone: "Can execute commands and commit via voice"
-- All core features functional
+- Week 2 milestone: "Can execute Copilot CLI commands via voice"
+- Demo workflow working: Save → Git status → Copilot explain → Copilot commit → Git push
 
 ---
 
@@ -328,33 +335,48 @@ Insert text at cursor position:
 
 #### Phase 3.3: Documentation & Demo (Days 19-20)
 
-- [ ] README with clear installation steps
-- [ ] Demo GIFs for each feature
-- [ ] 2-minute video walkthrough
+- [ ] README with clear installation steps (including Copilot CLI setup)
+- [ ] Demo GIFs showing Copilot CLI voice commands
+- [ ] 2-minute video walkthrough featuring demo workflow:
+    1. Introduce a bug
+    2. "Save all"
+    3. "Git status"
+    4. "Ask copilot explain this error"
+    5. "Ask copilot suggest fix"
+    6. Apply fix
+    7. "Ask copilot write commit message"
+    8. "Git push"
 - [ ] CHANGELOG.md
-- [ ] CONTRIBUTING.md
-- [ ] Sample workspace/examples
+- [ ] Prerequisites section: Copilot CLI installation + authentication
 
 **Deliverables**:
 
-- Professional documentation
-- High-quality demo assets
-- Clear value proposition
+- Professional documentation highlighting Copilot CLI integration
+- High-quality demo showing full dev loop driven by voice
+- Clear value proposition: "Not just dictation—real Copilot CLI workflows"
 
 #### Phase 3.4: Publication & Submission (Day 21 - Feb 15)
 
 - [ ] Package extension (.vsix)
 - [ ] Publish to VS Code Marketplace
-- [ ] Create GitHub release (v0.1.0)
-- [ ] Write DEV.to competition article
-- [ ] Document Copilot CLI usage examples
-- [ ] Submit to competition
+- [ ] Create GitHub release (v0.1.0-preview)
+- [ ] Write DEV.to competition article highlighting:
+    - Voice-controlled GitHub Copilot CLI (headline feature)
+    - Voice-driven Git workflow
+    - Real editor control (not just dictation)
+    - Multi-provider speech engine
+    - Accessibility angle
+- [ ] Include competition-specific content:
+    - Copilot CLI command examples with screenshots
+    - Demo workflow video/GIF
+    - Future roadmap (AI intent routing, conversational mode)
+- [ ] Submit to GitHub Copilot CLI Challenge
 
 **Deliverables**:
 
 - ✅ Extension live on marketplace
-- ✅ Competition submission complete
-- ✅ Blog post published
+- ✅ Competition submission complete with Copilot CLI focus
+- ✅ Blog post published emphasizing "judge bait" features
 - Week 3 milestone: "Shipped & submitted!"
 
 ---
