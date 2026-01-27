@@ -39,18 +39,27 @@ VoiceDev supports multiple AI providers to give users flexibility in cost, speed
 
 #### Speech-to-Text Providers
 
-| Provider           | Speed        | Cost          | Offline | Default |
-| ------------------ | ------------ | ------------- | ------- | ------- |
-| **Groq Whisper**   | ⚡ Very Fast | 🆓 Free       | ❌      | ✅ YES  |
-| **OpenAI Whisper** | 🐢 Medium    | 💰 $0.006/min | ❌      | ❌      |
-| **Local Whisper**  | 🐌 Slow      | 🆓 Free       | ✅      | v0.2.0+ |
+| Provider           | Speed        | Cost          | Offline | Privacy    | Default   |
+| ------------------ | ------------ | ------------- | ------- | ---------- | --------- |
+| **Groq Whisper**   | ⚡ Very Fast | 🆓 Free       | ❌      | ☁️ Cloud   | ✅ YES    |
+| **OpenAI Whisper** | 🐢 Medium    | 💰 $0.006/min | ❌      | ☁️ Cloud   | ❌        |
+| **Local Whisper**  | 🐌 Slower    | 🆓 Free       | ✅ Yes  | 🔒 Private | ✅ v0.1.0 |
 
 **Why Groq as Default?**
 
 - FREE tier with generous limits
 - 10x faster than OpenAI
 - Same Whisper model quality
-- Perfect for preview version
+- Fastest onboarding (API key only)
+- Perfect for quick testing and getting started
+
+**Local Provider (Privacy-First):**
+
+- ✅ Available in v0.1.0 (fully implemented)
+- 🔒 Your voice never leaves your machine
+- 🆓 Zero API costs, unlimited usage
+- ✅ Works completely offline
+- One-time setup (~2 min) required
 
 #### LLM Providers (Commit Messages)
 
@@ -1085,10 +1094,15 @@ gh copilot suggest "write unit test for command parser fuzzy matching"
 
 **Roadmap**:
 
-- **v0.2.0-preview**: Local Whisper support (offline mode)
-    - Run Whisper locally via whisper.cpp
+- **v0.1.0-preview** (Current):
+    - ✅ Local Whisper support via faster-whisper
+    - ✅ Multi-provider architecture (Groq, OpenAI, Local)
+    - ✅ Privacy-first offline mode
     - No API costs, full privacy
-    - Slower but works offline
+- **v0.2.0-preview**: Enhanced local features
+    - Cross-platform support (macOS, Linux)
+    - GPU acceleration for faster local transcription
+    - Custom model fine-tuning
 - **v0.3.0-preview**: Code generation from voice
     - "create a function that..."
     - "add error handling to this"

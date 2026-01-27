@@ -29,8 +29,25 @@ export function activate(context: vscode.ExtensionContext) {
 	const recorder = createRecorder(context);
 	context.subscriptions.push(new vscode.Disposable(() => recorder.dispose()));
 
-	const transcriptionService = new TranscriptionService();
+	const transcriptionService = new TranscriptionService(context);
 	context.subscriptions.push(new vscode.Disposable(() => transcriptionService.dispose()));
+
+	// Initialize status bar with current provider
+	statusBar.setProvider(transcriptionService.getProviderType());
+
+	// Listen for provider changes and update status bar
+	context.subscriptions.push(
+		transcriptionService.onProviderChange((provider) => {
+			statusBar.setProvider(provider);
+			void vscode.window.showInformationMessage(`VoiceDev: Switched to ${provider} provider`);
+		}),
+	);
+
+	// Defer API key validation to avoid secrets race condition
+	setTimeout(() => {
+		console.log("VoiceDev: Checking API key configuration...");
+		// Validation happens lazily when first needed
+	}, 100);
 
 	// Initialize voice command system
 	registerAllCommands();
