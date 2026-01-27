@@ -10,6 +10,12 @@ export class TranscriptionService {
 	private context: vscode.ExtensionContext;
 	private currentProviderType: SttProviderType;
 	private configChangeDisposable: vscode.Disposable;
+	private onProviderChangeEmitter = new vscode.EventEmitter<SttProviderType>();
+
+	/**
+	 * Event fired when the STT provider changes
+	 */
+	public readonly onProviderChange = this.onProviderChangeEmitter.event;
 
 	constructor(context: vscode.ExtensionContext) {
 		this.context = context;
@@ -53,6 +59,9 @@ export class TranscriptionService {
 			this.provider = this.createProvider(newType);
 
 			console.log(`[TranscriptionService] Switched to ${this.provider.getName()}`);
+
+			// Notify listeners about the provider change
+			this.onProviderChangeEmitter.fire(newType);
 		}
 	}
 
@@ -68,7 +77,15 @@ export class TranscriptionService {
 		return this.provider.getName();
 	}
 
+	/**
+	 * Get the current provider type
+	 */
+	getProviderType(): SttProviderType {
+		return this.currentProviderType;
+	}
+
 	dispose(): void {
+		this.onProviderChangeEmitter.dispose();
 		this.configChangeDisposable.dispose();
 		this.provider.dispose();
 	}
