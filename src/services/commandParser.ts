@@ -1,11 +1,12 @@
 /**
  * Command Parser
  * Parses transcribed voice input and matches it against registered commands
- * Uses Fuse.js for fuzzy matching
+ * Uses Fuse.js for fuzzy matching and PatternMatcher for wildcard patterns
  */
 
 import { VoiceCommand, ParsedResult, CommandParserConfig, DEFAULT_PARSER_CONFIG } from "@commands/types";
 import { getCommandRegistry } from "@commands/registry";
+import { getPatternMatcher } from "./patternMatcher";
 
 /**
  * Internal type for fuse.js search items
@@ -102,7 +103,23 @@ export class CommandParser {
 			};
 		}
 
-		// Search for matching commands
+		// First: Check wildcard patterns
+		const registry = getCommandRegistry();
+		const patternMatcher = getPatternMatcher();
+		const patternResult = patternMatcher.match(normalizedText, registry.getAll());
+
+		if (patternResult.matched && patternResult.command) {
+			return {
+				type: "command",
+				command: patternResult.command,
+				confidence: patternResult.confidence,
+				originalText: text,
+				matchedTrigger: patternResult.pattern,
+				extractedArgs: { wildcards: patternResult.wildcards },
+			};
+		}
+
+		// Second: Search for matching commands using Fuse.js
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 		const results = this.fuse.search(normalizedText) as FuseSearchResult[];
 

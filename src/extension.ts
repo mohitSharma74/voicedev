@@ -13,6 +13,10 @@ import { insertOrSendText } from "@utils/textInsertion";
 import { registerAllCommands, getCommandRegistry } from "@commands/index";
 import { initCommandParser } from "@services/commandParser";
 import { getCommandExecutor } from "@services/commandExecutor";
+import { initCopilotDetection } from "@services/copilotDetection";
+import { getTerminalHelper } from "@services/terminalHelper";
+import { getFileHelper } from "@services/fileHelper";
+import { ExecutionContext } from "@commands/types";
 
 const RECORDING_CONTEXT_KEY = "voicedev.isRecording";
 let lastCapturedBuffer: Buffer | undefined;
@@ -64,6 +68,9 @@ export function activate(context: vscode.ExtensionContext) {
 		.catch((error) => {
 			console.error("Failed to initialize command parser:", error);
 		});
+
+	// Initialize Copilot detection
+	initCopilotDetection().catch(console.error);
 
 	const autoStopDisposable = recorder.onAutoStop(() => {
 		// Auto-stop triggers the stop command logic flow indirectly
@@ -162,9 +169,21 @@ export function activate(context: vscode.ExtensionContext) {
 					}
 
 					if (parsedResult?.type === "command" && parsedResult.command) {
-						// Execute the voice command
+						// Execute the voice command with context
 						try {
-							const execResult = await commandExecutor.execute(parsedResult);
+							const ctx: ExecutionContext = {
+								args: parsedResult.extractedArgs
+									? {
+											wildcards: parsedResult.extractedArgs.wildcards,
+											originalText: text,
+											matchedPattern: parsedResult.matchedTrigger || "",
+										}
+									: undefined,
+								terminal: getTerminalHelper(),
+								files: getFileHelper(),
+							};
+
+							const execResult = await commandExecutor.execute(parsedResult, ctx);
 							if (execResult && !execResult.success) {
 								console.error("Command execution failed:", execResult.error);
 							}

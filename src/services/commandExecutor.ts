@@ -4,7 +4,7 @@
  */
 
 import * as vscode from "vscode";
-import { VoiceCommand, ParsedResult } from "@commands/types";
+import { VoiceCommand, ParsedResult, ExecutionContext } from "@commands/types";
 
 /**
  * Result of a command execution attempt
@@ -45,26 +45,28 @@ export class CommandExecutor {
 	/**
 	 * Execute a parsed command result
 	 * @param result The parsed result from CommandParser
+	 * @param ctx Optional execution context for the command
 	 * @returns ExecutionResult with success/failure info
 	 */
-	async execute(result: ParsedResult): Promise<ExecutionResult | null> {
+	async execute(result: ParsedResult, ctx?: ExecutionContext): Promise<ExecutionResult | null> {
 		if (result.type !== "command" || !result.command) {
 			return null;
 		}
 
-		return this.executeCommand(result.command);
+		return this.executeCommand(result.command, ctx);
 	}
 
 	/**
 	 * Execute a specific voice command
 	 * @param command The command to execute
+	 * @param ctx Optional execution context
 	 * @returns ExecutionResult with success/failure info
 	 */
-	async executeCommand(command: VoiceCommand): Promise<ExecutionResult> {
+	async executeCommand(command: VoiceCommand, ctx?: ExecutionContext): Promise<ExecutionResult> {
 		const startTime = Date.now();
 
 		try {
-			await command.execute();
+			await command.execute(ctx);
 
 			const executionTimeMs = Date.now() - startTime;
 			const result: ExecutionResult = {

@@ -9,6 +9,34 @@
 export type CommandCategory = "editor" | "git" | "terminal" | "navigation" | "system";
 
 /**
+ * Terminal helper interface for running commands in the integrated terminal
+ */
+export interface TerminalHelper {
+	run(command: string, options?: { name?: string; execute?: boolean; focus?: boolean }): void;
+}
+
+/**
+ * File helper interface for file picker operations
+ */
+export interface FileHelper {
+	pickFile(options?: { title?: string }): Promise<string | undefined>;
+	getActiveFilePath(): string | undefined;
+}
+
+/**
+ * Execution context passed to commands
+ */
+export interface ExecutionContext {
+	args?: {
+		wildcards: string[];
+		originalText: string;
+		matchedPattern: string;
+	};
+	terminal: TerminalHelper;
+	files: FileHelper;
+}
+
+/**
  * Represents a voice command that can be executed
  */
 export interface VoiceCommand {
@@ -25,7 +53,10 @@ export interface VoiceCommand {
 	category: CommandCategory;
 
 	/** The action to perform when the command is triggered */
-	execute: () => Promise<void>;
+	execute: (ctx?: ExecutionContext) => Promise<void>;
+
+	/** Flag for Copilot-dependent commands */
+	requiresCopilot?: boolean;
 }
 
 /**
@@ -46,6 +77,9 @@ export interface ParsedResult {
 
 	/** The specific trigger phrase that was matched (if any) */
 	matchedTrigger?: string;
+
+	/** Extracted arguments from wildcard patterns */
+	extractedArgs?: { wildcards: string[] };
 }
 
 /**
