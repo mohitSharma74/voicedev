@@ -53,20 +53,6 @@ const newTerminalCommand: VoiceCommand = {
 };
 
 /**
- * Git Status Command
- * Shows the git status/source control view
- */
-const gitStatusCommand: VoiceCommand = {
-	id: "git-status",
-	triggers: ["git status", "show git status", "source control", "show changes"],
-	description: "Show git status",
-	category: "git",
-	execute: async () => {
-		await vscode.commands.executeCommand("workbench.view.scm");
-	},
-};
-
-/**
  * Close Editor Command
  * Closes the currently active editor tab
  */
@@ -87,9 +73,8 @@ export const editorCommands: VoiceCommand[] = [
 	saveAllCommand,
 	formatDocumentCommand,
 	newTerminalCommand,
-	gitStatusCommand,
 	closeEditorCommand,
 ];
 
 // Also export individually for direct access if needed
-export { saveAllCommand, formatDocumentCommand, newTerminalCommand, gitStatusCommand, closeEditorCommand };
+export { saveAllCommand, formatDocumentCommand, newTerminalCommand, closeEditorCommand };

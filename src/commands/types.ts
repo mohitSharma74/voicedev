@@ -53,7 +53,7 @@ export interface VoiceCommand {
 	category: CommandCategory;
 
 	/** The action to perform when the command is triggered */
-	execute: (ctx?: ExecutionContext) => Promise<void>;
+	execute: (ctx?: ExecutionContext) => Promise<void> | void;
 
 	/** Flag for Copilot-dependent commands */
 	requiresCopilot?: boolean;
