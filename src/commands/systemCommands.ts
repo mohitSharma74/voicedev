@@ -110,8 +110,22 @@ const listCommandsCommand: VoiceCommand = {
 };
 
 /**
+ * Open Command Center Command
+ * Opens the Command Center webview panel
+ */
+const openCommandCenterCommand: VoiceCommand = {
+	id: "open-command-center",
+	triggers: ["open command center", "show command center", "command reference", "voice command help"],
+	description: "Open the Command Center panel",
+	category: "system",
+	execute: async () => {
+		await vscode.commands.executeCommand("voicedev.openCommandCenter");
+	},
+};
+
+/**
  * All system commands exported as an array
  */
-export const systemCommands: VoiceCommand[] = [listCommandsCommand];
+export const systemCommands: VoiceCommand[] = [listCommandsCommand, openCommandCenterCommand];
 
-export { listCommandsCommand };
+export { listCommandsCommand, openCommandCenterCommand };

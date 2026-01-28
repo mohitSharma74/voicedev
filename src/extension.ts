@@ -3,6 +3,7 @@ import * as fs from "fs/promises";
 import * as path from "path";
 import { createRecorder } from "@services/recorderFactory";
 import { StatusBarManager } from "@ui/statusBar";
+import { CommandCenterPanel } from "@ui/commandCenter/CommandCenterPanel";
 import { showMicrophonePermissionGuide } from "@utils/permissionHelper";
 import { featureConfig } from "@config/feature.config";
 import { encodeWav, calculateDuration } from "@utils/wavEncoder";
@@ -320,6 +321,11 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
+	// Open Command Center - opens webview with all commands
+	const openCommandCenterCmd = vscode.commands.registerCommand("voicedev.openCommandCenter", () => {
+		CommandCenterPanel.createOrShow(context.extensionUri);
+	});
+
 	context.subscriptions.push(
 		startCommand,
 		stopCommand,
@@ -328,6 +334,7 @@ export function activate(context: vscode.ExtensionContext) {
 		setApiKeyCommand,
 		clearApiKeyCommand,
 		listCommandsCmd,
+		openCommandCenterCmd,
 	);
 }
 

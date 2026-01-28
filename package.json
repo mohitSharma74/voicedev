@@ -56,6 +56,10 @@
 			{
 				"command": "voicedev.listCommands",
 				"title": "VoiceDev: List Voice Commands"
+			},
+			{
+				"command": "voicedev.openCommandCenter",
+				"title": "VoiceDev: Open Command Center"
 			}
 		],
 		"configuration": {
