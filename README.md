@@ -1,6 +1,9 @@
-![VoiceDev](media/assets/voicedev-banner.png)
+![VoiceDev](media/assets/readme-banner.png)
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/mohitSharma74.voicedev?color=blue&label=VS%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=mohitSharma74.voicedev)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3.3-blue.svg)](https://www.typescriptlang.org/)
+[![VS Code](https://img.shields.io/badge/VS%20Code-1.85.0+-blue.svg)](https://code.visualstudio.com/)
 
 # VoiceDev 🎤
 
