@@ -4,6 +4,7 @@
 	"description": "Voice-activated commands for VS Code - speak to code, commit, and control your editor",
 	"version": "0.1.0",
 	"publisher": "mohitSharma74",
+	"icon": "media/assets/logo-128x128.png",
 	"engines": {
 		"vscode": "^1.85.0"
 	},

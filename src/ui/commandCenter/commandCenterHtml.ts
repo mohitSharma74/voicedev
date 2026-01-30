@@ -24,12 +24,18 @@ const categoryOrder = ["editor", "git", "terminal", "navigation", "system"];
  */
 export function getCommandCenterHtml(
 	webview: vscode.Webview,
-	_extensionUri: vscode.Uri,
+	extensionUri: vscode.Uri,
 	commands: CommandDisplayData[],
 ): string {
 	const nonce = getNonce();
 	const commandsByCategory = groupByCategory(commands);
 	const commandsJson = JSON.stringify(commands);
+
+	// Get webview URIs for logo images
+	const logoUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "media", "assets", "logo-128x128.png"));
+	const logoTransparentUri = webview.asWebviewUri(
+		vscode.Uri.joinPath(extensionUri, "media", "assets", "logo-transparent.png"),
+	);
 
 	return `<!DOCTYPE html>
 <html lang="en">
@@ -43,6 +49,7 @@ export function getCommandCenterHtml(
 <body>
     <div class="container">
         <header class="header">
+            <img class="header-logo" src="${logoUri.toString()}" alt="Voice-powered commands for VS Code" onerror="this.src='${logoTransparentUri.toString()}'" />
             <h1>VoiceDev Command Center</h1>
             <p class="subtitle">All available voice commands for hands-free coding</p>
         </header>

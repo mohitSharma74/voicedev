@@ -1,3 +1,5 @@
+![Voice-powered commands for VS Code](media/assets/logo-128x128.png)
+
 # Changelog
 
 All notable changes to the VoiceDev extension will be documented in this file.

@@ -34,11 +34,24 @@ export function getCommandCenterStyles(): string {
             border-bottom: 1px solid var(--vscode-panel-border);
         }
 
+        .header-logo {
+            max-height: 40px;
+            margin-right: 12px;
+            vertical-align: middle;
+            display: inline-block;
+        }
+
+        /* Theme-aware logo styling */
+        body.vscode-dark .header-logo,
+        body.vscode-high-contrast .header-logo {
+            filter: invert(1) brightness(0.9);
+        }
+
         .header h1 {
             font-size: 24px;
             font-weight: 600;
             color: var(--vscode-foreground);
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 10px;

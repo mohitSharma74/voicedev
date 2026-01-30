@@ -1,3 +1,7 @@
+![VoiceDev](media/assets/voicedev-banner.png)
+
+[![Version](https://img.shields.io/visual-studio-marketplace/v/mohitSharma74.voicedev?color=blue&label=VS%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=mohitSharma74.voicedev)
+
 # VoiceDev 🎤
 
 **Voice-activated commands for VS Code** - speak to code, commit, and control your editor.

@@ -1,3 +1,5 @@
+![Voice-powered commands for VS Code](media/assets/logo-128x128.png)
+
 # VoiceDev - VS Code Extension Project Plan
 
 **Timeline**: 3 weeks (Jan 25 - Feb 15, 2026)  
