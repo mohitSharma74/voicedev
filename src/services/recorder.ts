@@ -2,6 +2,8 @@ import * as vscode from "vscode";
 import { PvRecorder } from "@picovoice/pvrecorder-node";
 import { featureConfig } from "@config/feature.config";
 import { IVoiceRecorder } from "@services/IVoiceRecorder";
+import { getNotificationService } from "@ui/notificationService";
+import { ErrorFormatter } from "@utils/errorFormatter";
 
 export class VoiceRecorder implements IVoiceRecorder {
 	private buffers: Buffer[] = [];
@@ -136,12 +138,10 @@ export class VoiceRecorder implements IVoiceRecorder {
 				}
 
 				// Show user-facing error for real microphone issues
-				void vscode.window.showErrorMessage(
-					"Microphone error during recording. Please check:\n" +
-						"1. Microphone permissions are granted for VS Code\n" +
-						"2. No other app is using the microphone\n" +
-						"3. Your microphone is connected and working",
+				const formatted = ErrorFormatter.formatRecordingError(
+					error instanceof Error ? error : new Error(String(error)),
 				);
+				void getNotificationService().showError(formatted.message, formatted.actions);
 
 				break; // Exit loop
 			}

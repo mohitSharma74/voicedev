@@ -49,6 +49,9 @@ export interface VoiceCommand {
 	/** Human-readable description of what the command does */
 	description: string;
 
+	/** Optional keyboard shortcut hint */
+	shortcut?: string;
+
 	/** Category for organizing commands */
 	category: CommandCategory;
 

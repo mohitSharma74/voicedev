@@ -6,6 +6,8 @@
 import * as vscode from "vscode";
 import { VoiceCommand, CommandCategory } from "./types";
 import { getCommandRegistry } from "./registry";
+import { getNotificationService } from "@ui/notificationService";
+import { showShortcuts } from "@ui/shortcutHints";
 
 /**
  * Format commands for display in the quick pick
@@ -59,13 +61,18 @@ function formatCommandList(): vscode.QuickPickItem[] {
 
 		// Add commands in this category
 		for (const cmd of cmds) {
+			const triggerPreview = cmd.triggers
+				.slice(0, 3)
+				.map((t) => `"${t}"`)
+				.join(", ");
+			const extraTriggers = cmd.triggers.length > 3 ? `+${cmd.triggers.length - 3} more triggers` : undefined;
+			const shortcutHint = cmd.shortcut ? `Shortcut: ${cmd.shortcut}` : undefined;
+			const detail = [shortcutHint, extraTriggers].filter(Boolean).join(" | ");
+
 			items.push({
 				label: cmd.description,
-				description: cmd.triggers
-					.slice(0, 3)
-					.map((t) => `"${t}"`)
-					.join(", "),
-				detail: cmd.triggers.length > 3 ? `+${cmd.triggers.length - 3} more triggers` : undefined,
+				description: triggerPreview,
+				detail: detail || undefined,
 			});
 		}
 	}
@@ -82,11 +89,12 @@ const listCommandsCommand: VoiceCommand = {
 	triggers: ["list commands", "show commands", "what commands", "help", "available commands", "voice commands"],
 	description: "Show all available voice commands",
 	category: "system",
+	shortcut: "Ctrl+Shift+L",
 	execute: async () => {
 		const items = formatCommandList();
 
 		if (items.length === 0) {
-			void vscode.window.showInformationMessage("No voice commands registered yet.");
+			void getNotificationService().showInfo("No voice commands registered yet.");
 			return;
 		}
 
@@ -124,8 +132,21 @@ const openCommandCenterCommand: VoiceCommand = {
 };
 
 /**
+ * Show Keyboard Shortcuts Command
+ */
+const showShortcutsCommand: VoiceCommand = {
+	id: "show-shortcuts",
+	triggers: ["show shortcuts", "keyboard shortcuts", "show keys"],
+	description: "Show keyboard shortcuts",
+	category: "system",
+	execute: async () => {
+		await showShortcuts();
+	},
+};
+
+/**
  * All system commands exported as an array
  */
-export const systemCommands: VoiceCommand[] = [listCommandsCommand, openCommandCenterCommand];
+export const systemCommands: VoiceCommand[] = [listCommandsCommand, openCommandCenterCommand, showShortcutsCommand];
 
-export { listCommandsCommand, openCommandCenterCommand };
+export { listCommandsCommand, openCommandCenterCommand, showShortcutsCommand };

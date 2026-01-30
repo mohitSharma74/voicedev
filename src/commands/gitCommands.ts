@@ -3,9 +3,9 @@
  * Voice commands for common Git operations in the terminal
  */
 
-import * as vscode from "vscode";
 import { VoiceCommand, ExecutionContext } from "./types";
 import { confirmGitPush, confirmGitCommit } from "@utils/confirmationHelper";
+import { getNotificationService } from "@ui/notificationService";
 
 /**
  * Escape double quotes and special characters for safe shell execution
@@ -22,14 +22,14 @@ function escapeDoubleQuotes(str: string): string {
  * Show a warning message to the user
  */
 function showWarning(message: string): void {
-	void vscode.window.showWarningMessage(`VoiceDev: ${message}`);
+	void getNotificationService().showWarning(message);
 }
 
 /**
  * Show an error message to the user
  */
 function showError(message: string): void {
-	void vscode.window.showErrorMessage(`VoiceDev: ${message}`);
+	void getNotificationService().showError(message);
 }
 
 /**
@@ -85,7 +85,7 @@ const gitPushCommand: VoiceCommand = {
 
 		const confirmed = await confirmGitPush();
 		if (!confirmed) {
-			void vscode.window.showInformationMessage("Git push cancelled.");
+			getNotificationService().showGitPushCancelled();
 			return;
 		}
 
@@ -138,7 +138,7 @@ const gitCommitMessageCommand: VoiceCommand = {
 		// Confirm before committing
 		const confirmed = await confirmGitCommit(trimmedMessage);
 		if (!confirmed) {
-			void vscode.window.showInformationMessage("Git commit cancelled.");
+			getNotificationService().showGitCommitCancelled();
 			return;
 		}
 

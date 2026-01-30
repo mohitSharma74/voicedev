@@ -8,6 +8,8 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import * as fs from "fs/promises";
 import { constants as fsConstants } from "fs";
+import { getNotificationService } from "@ui/notificationService";
+import { ErrorFormatter } from "@utils/errorFormatter";
 
 const execAsync = promisify(exec);
 
@@ -139,20 +141,20 @@ export async function checkCopilotAvailability(): Promise<CopilotStatus> {
 export async function showInstallPrompt(): Promise<void> {
 	const DOCS_URL = "https://docs.github.com/en/copilot/github-copilot-in-the-cli";
 
-	const choice = await vscode.window.showWarningMessage(
-		"GitHub Copilot CLI is not installed or not available.",
-		"Open Documentation",
-		"Install gh-copilot",
-	);
-
-	if (choice === "Open Documentation") {
-		void vscode.env.openExternal(vscode.Uri.parse(DOCS_URL));
-	} else if (choice === "Install gh-copilot") {
-		// Open terminal and run install command
-		const terminal = vscode.window.createTerminal("Install Copilot");
-		terminal.show();
-		terminal.sendText(`${getCopilotCliCommand()} extension install github/gh-copilot`, true);
-	}
+	await getNotificationService().showWarning("GitHub Copilot CLI is not installed.", [
+		{
+			title: "Open Documentation",
+			action: () => vscode.env.openExternal(vscode.Uri.parse(DOCS_URL)),
+		},
+		{
+			title: "Install gh-copilot",
+			action: () => {
+				const terminal = vscode.window.createTerminal("Install Copilot");
+				terminal.show();
+				terminal.sendText(`${getCopilotCliCommand()} extension install github/gh-copilot`, true);
+			},
+		},
+	]);
 }
 
 /**
@@ -165,7 +167,8 @@ export async function requireCopilot(): Promise<boolean> {
 	if (!status.available) {
 		console.warn("Copilot not available:", status.error);
 		if (status.error?.includes("Configured GitHub CLI path")) {
-			void vscode.window.showErrorMessage(status.error);
+			const formatted = ErrorFormatter.formatCopilotError(new Error(status.error));
+			void getNotificationService().showError(formatted.message, formatted.actions);
 			return false;
 		}
 		await showInstallPrompt();
