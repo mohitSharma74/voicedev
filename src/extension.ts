@@ -14,7 +14,7 @@ import { insertOrSendText } from "@utils/textInsertion";
 import { registerAllCommands, getCommandRegistry } from "@commands/index";
 import { initCommandParser } from "@services/commandParser";
 import { getCommandExecutor } from "@services/commandExecutor";
-import { initCopilotDetection } from "@services/copilotDetection";
+import { initCopilotDetection, clearCopilotCache } from "@services/copilotDetection";
 import { getTerminalHelper } from "@services/terminalHelper";
 import { getFileHelper } from "@services/fileHelper";
 import { ExecutionContext } from "@commands/types";
@@ -69,6 +69,18 @@ export function activate(context: vscode.ExtensionContext) {
 		.catch((error) => {
 			console.error("Failed to initialize command parser:", error);
 		});
+
+	const configChangeDisposable = vscode.workspace.onDidChangeConfiguration((event) => {
+		if (event.affectsConfiguration("voicedev.commands.disabled")) {
+			commandParser?.refresh();
+			CommandCenterPanel.refreshIfOpen();
+		}
+		if (event.affectsConfiguration("voicedev.copilot.cliPath")) {
+			clearCopilotCache();
+			initCopilotDetection().catch(console.error);
+		}
+	});
+	context.subscriptions.push(configChangeDisposable);
 
 	// Initialize Copilot detection
 	initCopilotDetection().catch(console.error);

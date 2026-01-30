@@ -188,6 +188,10 @@ export function getCommandCenterStyles(): string {
             background-color: var(--vscode-list-hoverBackground);
         }
 
+        .commands-table tbody tr.disabled {
+            opacity: 0.55;
+        }
+
         .commands-table td {
             padding: 10px 12px;
             vertical-align: top;
@@ -266,6 +270,11 @@ export function getCommandCenterStyles(): string {
         .copilot-badge {
             background-color: var(--vscode-charts-purple, #a855f7);
             color: white;
+        }
+
+        .disabled-badge {
+            background-color: var(--vscode-inputValidation-warningBackground, #f59e0b);
+            color: var(--vscode-inputValidation-warningForeground, #1f1f1f);
         }
 
         /* Footer */

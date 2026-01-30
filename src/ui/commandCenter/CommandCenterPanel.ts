@@ -7,6 +7,7 @@ import * as vscode from "vscode";
 import { getCommandRegistry } from "@commands/index";
 import { CommandCategory } from "@commands/types";
 import { getCommandCenterHtml } from "./commandCenterHtml";
+import { isCommandDisabled } from "@services/commandSettings";
 
 /**
  * Display-safe command data (without execute function)
@@ -17,6 +18,7 @@ export interface CommandDisplayData {
 	description: string;
 	category: CommandCategory;
 	requiresCopilot: boolean;
+	disabled: boolean;
 }
 
 /**
@@ -57,6 +59,10 @@ export class CommandCenterPanel {
 		CommandCenterPanel.currentPanel = new CommandCenterPanel(panel, extensionUri);
 	}
 
+	public static refreshIfOpen(): void {
+		CommandCenterPanel.currentPanel?.refresh();
+	}
+
 	private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
 		this._panel = panel;
 		this._extensionUri = extensionUri;
@@ -83,6 +89,10 @@ export class CommandCenterPanel {
 		this._panel.webview.html = getCommandCenterHtml(this._panel.webview, this._extensionUri, commands);
 	}
 
+	public refresh(): void {
+		this._update();
+	}
+
 	/**
 	 * Gets command data from registry in display-safe format
 	 */
@@ -94,6 +104,7 @@ export class CommandCenterPanel {
 			description: cmd.description,
 			category: cmd.category,
 			requiresCopilot: cmd.requiresCopilot ?? false,
+			disabled: isCommandDisabled(cmd.id),
 		}));
 	}
 

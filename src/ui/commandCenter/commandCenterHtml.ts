@@ -166,22 +166,26 @@ function renderCommandRow(cmd: CommandDisplayData): string {
 	const copilotBadge = cmd.requiresCopilot
 		? '<span class="badge copilot-badge" title="Requires GitHub Copilot">Copilot</span>'
 		: "";
+	const disabledBadge = cmd.disabled
+		? '<span class="badge disabled-badge" title="Disabled in settings">Disabled</span>'
+		: "";
+	const rowClass = cmd.disabled ? "command-row disabled" : "command-row";
 
 	return `
-    <tr class="command-row" data-command-id="${cmd.id}" data-category="${cmd.category}">
-        <td class="trigger-cell">
-            <div class="trigger-list">
-                ${cmd.triggers.map((t) => `<span class="trigger-phrase">"${escapeHtml(t)}"</span>`).join("")}
-            </div>
-        </td>
-        <td class="description-cell">
-            <div class="command-description">${escapeHtml(cmd.description)}${copilotBadge}</div>
-            <div class="command-id">${escapeHtml(cmd.id)}</div>
-        </td>
-        <td class="category-cell">
-            <span class="category-tag">${escapeHtml(cmd.category)}</span>
-        </td>
-    </tr>`;
+	<tr class="${rowClass}" data-command-id="${cmd.id}" data-category="${cmd.category}">
+		<td class="trigger-cell">
+			<div class="trigger-list">
+				${cmd.triggers.map((t) => `<span class="trigger-phrase">"${escapeHtml(t)}"</span>`).join("")}
+			</div>
+		</td>
+		<td class="description-cell">
+			<div class="command-description">${escapeHtml(cmd.description)}${copilotBadge}${disabledBadge}</div>
+			<div class="command-id">${escapeHtml(cmd.id)}</div>
+		</td>
+		<td class="category-cell">
+			<span class="category-tag">${escapeHtml(cmd.category)}</span>
+		</td>
+	</tr>`;
 }
 
 /**

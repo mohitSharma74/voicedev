@@ -7,6 +7,7 @@
 import { VoiceCommand, ParsedResult, CommandParserConfig, DEFAULT_PARSER_CONFIG } from "@commands/types";
 import { getCommandRegistry } from "@commands/registry";
 import { getPatternMatcher } from "./patternMatcher";
+import { getDisabledCommandIds } from "./commandSettings";
 
 /**
  * Internal type for fuse.js search items
@@ -67,7 +68,8 @@ export class CommandParser {
 		}
 
 		const registry = getCommandRegistry();
-		const triggers = registry.getAllTriggers();
+		const disabledIds = getDisabledCommandIds();
+		const triggers = registry.getEnabledTriggers(disabledIds);
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
 		this.fuse = new this.FuseClass(triggers, {
@@ -93,6 +95,7 @@ export class CommandParser {
 	 */
 	parse(text: string): ParsedResult {
 		const normalizedText = this.normalizeText(text);
+		const disabledIds = getDisabledCommandIds();
 
 		// If not initialized or no fuse, treat as dictation
 		if (!this.fuse) {
@@ -106,7 +109,7 @@ export class CommandParser {
 		// First: Check wildcard patterns
 		const registry = getCommandRegistry();
 		const patternMatcher = getPatternMatcher();
-		const patternResult = patternMatcher.match(normalizedText, registry.getAll());
+		const patternResult = patternMatcher.match(normalizedText, registry.getEnabledCommands(disabledIds));
 
 		if (patternResult.matched && patternResult.command) {
 			return {
@@ -140,6 +143,14 @@ export class CommandParser {
 
 		// Check if confidence meets threshold
 		if (confidence >= this.config.confidenceThreshold) {
+			if (disabledIds.has(bestMatch.item.command.id)) {
+				return {
+					type: "dictation",
+					confidence: 0,
+					originalText: text,
+					matchedTrigger: bestMatch.item.trigger,
+				};
+			}
 			return {
 				type: "command",
 				command: bestMatch.item.command,

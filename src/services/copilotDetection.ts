@@ -6,8 +6,42 @@
 import * as vscode from "vscode";
 import { exec } from "child_process";
 import { promisify } from "util";
+import * as fs from "fs/promises";
+import { constants as fsConstants } from "fs";
 
 const execAsync = promisify(exec);
+
+function getConfiguredCliPath(): string | undefined {
+	const config = vscode.workspace.getConfiguration("voicedev");
+	const cliPath = config.get<string>("copilot.cliPath")?.trim();
+	return cliPath ? cliPath : undefined;
+}
+
+function formatCliCommand(cliPath: string): string {
+	if (cliPath.startsWith('"') && cliPath.endsWith('"')) {
+		return cliPath;
+	}
+	if (cliPath.includes(" ")) {
+		return `"${cliPath.replace(/"/g, '\\"')}"`;
+	}
+	return cliPath;
+}
+
+async function isValidCliPath(cliPath: string): Promise<boolean> {
+	try {
+		const accessMode = process.platform === "win32" ? fsConstants.F_OK : fsConstants.X_OK;
+		await fs.access(cliPath, accessMode);
+		const stats = await fs.stat(cliPath);
+		return stats.isFile();
+	} catch {
+		return false;
+	}
+}
+
+export function getCopilotCliCommand(): string {
+	const cliPath = getConfiguredCliPath();
+	return cliPath ? formatCliCommand(cliPath) : "gh";
+}
 
 /**
  * Copilot availability status
@@ -34,21 +68,41 @@ export async function checkCopilotAvailability(): Promise<CopilotStatus> {
 		return copilotStatusCache;
 	}
 
+	const configuredCliPath = getConfiguredCliPath();
+	const cliCommand = configuredCliPath ? formatCliCommand(configuredCliPath) : "gh";
+
 	try {
+		// Validate custom CLI path if provided
+		if (configuredCliPath) {
+			const isValid = await isValidCliPath(configuredCliPath);
+			if (!isValid) {
+				const status: CopilotStatus = {
+					available: false,
+					error:
+						`Configured GitHub CLI path is invalid: ${configuredCliPath}. ` +
+						"Update voicedev.copilot.cliPath or leave it empty to use gh from PATH.",
+				};
+				copilotStatusCache = status;
+				return status;
+			}
+		}
+
 		// Check if gh is installed first
 		try {
-			await execAsync("gh --version");
+			await execAsync(`${cliCommand} --version`);
 		} catch {
 			const status: CopilotStatus = {
 				available: false,
-				error: "GitHub CLI (gh) not found. Please install it from https://cli.github.com/",
+				error: configuredCliPath
+					? `GitHub CLI not executable at configured path: ${configuredCliPath}.`
+					: "GitHub CLI (gh) not found. Please install it from https://cli.github.com/",
 			};
 			copilotStatusCache = status;
 			return status;
 		}
 
 		// Check if copilot extension is installed
-		const { stdout } = await execAsync("gh copilot --version");
+		const { stdout } = await execAsync(`${cliCommand} copilot --version`);
 		const version = stdout.trim();
 
 		const status: CopilotStatus = {
@@ -97,7 +151,7 @@ export async function showInstallPrompt(): Promise<void> {
 		// Open terminal and run install command
 		const terminal = vscode.window.createTerminal("Install Copilot");
 		terminal.show();
-		terminal.sendText("gh extension install github/gh-copilot", true);
+		terminal.sendText(`${getCopilotCliCommand()} extension install github/gh-copilot`, true);
 	}
 }
 
@@ -110,6 +164,10 @@ export async function requireCopilot(): Promise<boolean> {
 
 	if (!status.available) {
 		console.warn("Copilot not available:", status.error);
+		if (status.error?.includes("Configured GitHub CLI path")) {
+			void vscode.window.showErrorMessage(status.error);
+			return false;
+		}
 		await showInstallPrompt();
 		return false;
 	}

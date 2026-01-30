@@ -101,6 +101,19 @@
 					"default": true,
 					"description": "Play audio feedback when starting or stopping recording"
 				},
+				"voicedev.copilot.cliPath": {
+					"type": "string",
+					"default": "",
+					"description": "Optional absolute path to the GitHub CLI (gh) executable used for Copilot commands"
+				},
+				"voicedev.commands.disabled": {
+					"type": "array",
+					"default": [],
+					"items": {
+						"type": "string"
+					},
+					"description": "List of voice command IDs to disable"
+				},
 				"voicedev.local.model": {
 					"type": "string",
 					"default": "base",

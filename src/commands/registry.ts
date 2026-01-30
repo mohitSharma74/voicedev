@@ -99,6 +99,32 @@ class CommandRegistry {
 	}
 
 	/**
+	 * Get all enabled commands (excluding disabled IDs)
+	 */
+	getEnabledCommands(disabledIds: Set<string>): VoiceCommand[] {
+		if (disabledIds.size === 0) {
+			return this.getAll();
+		}
+		return this.getAll().filter((cmd) => !disabledIds.has(cmd.id));
+	}
+
+	/**
+	 * Get all trigger phrases for enabled commands
+	 */
+	getEnabledTriggers(disabledIds: Set<string>): { trigger: string; command: VoiceCommand }[] {
+		const triggers: { trigger: string; command: VoiceCommand }[] = [];
+		const commands = this.getEnabledCommands(disabledIds);
+
+		for (const command of commands) {
+			for (const trigger of command.triggers) {
+				triggers.push({ trigger: trigger.toLowerCase(), command });
+			}
+		}
+
+		return triggers;
+	}
+
+	/**
 	 * Get the total number of registered commands
 	 */
 	get size(): number {

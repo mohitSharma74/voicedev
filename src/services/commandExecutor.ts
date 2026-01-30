@@ -5,6 +5,7 @@
 
 import * as vscode from "vscode";
 import { VoiceCommand, ParsedResult, ExecutionContext } from "@commands/types";
+import { isCommandDisabled } from "./commandSettings";
 
 /**
  * Result of a command execution attempt
@@ -64,6 +65,17 @@ export class CommandExecutor {
 	 */
 	async executeCommand(command: VoiceCommand, ctx?: ExecutionContext): Promise<ExecutionResult> {
 		const startTime = Date.now();
+		if (isCommandDisabled(command.id)) {
+			void vscode.window.showWarningMessage(
+				`VoiceDev: Command "${command.description}" is disabled in settings.`,
+			);
+			return {
+				success: false,
+				command,
+				error: new Error("Command is disabled in settings"),
+				executionTimeMs: Date.now() - startTime,
+			};
+		}
 
 		try {
 			await command.execute(ctx);

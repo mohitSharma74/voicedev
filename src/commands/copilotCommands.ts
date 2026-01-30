@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import { VoiceCommand, ExecutionContext } from "./types";
-import { requireCopilot } from "@services/copilotDetection";
+import { requireCopilot, getCopilotCliCommand } from "@services/copilotDetection";
 
 /**
  * Escape quotes in a string for safe shell usage
@@ -89,7 +89,7 @@ export const copilotCommands: VoiceCommand[] = [
 				return;
 			}
 
-			ctx?.terminal.run(`gh copilot explain "${escapeQuotes(query)}"`);
+			ctx?.terminal.run(`${getCopilotCliCommand()} copilot explain "${escapeQuotes(query)}"`);
 		},
 	},
 
@@ -109,7 +109,7 @@ export const copilotCommands: VoiceCommand[] = [
 				return;
 			}
 
-			ctx?.terminal.run(`gh copilot explain "Explain the code in ${filePath}"`);
+			ctx?.terminal.run(`${getCopilotCliCommand()} copilot explain "Explain the code in ${filePath}"`);
 		},
 	},
 
@@ -124,7 +124,9 @@ export const copilotCommands: VoiceCommand[] = [
 				return;
 			}
 
-			ctx?.terminal.run(`gh copilot suggest "Write a git commit message for the current changes"`);
+			ctx?.terminal.run(
+				`${getCopilotCliCommand()} copilot suggest "Write a git commit message for the current changes"`,
+			);
 		},
 	},
 
@@ -145,7 +147,7 @@ export const copilotCommands: VoiceCommand[] = [
 				return;
 			}
 
-			ctx?.terminal.run(`gh copilot suggest "${escapeQuotes(query)}"`);
+			ctx?.terminal.run(`${getCopilotCliCommand()} copilot suggest "${escapeQuotes(query)}"`);
 		},
 	},
 ];
