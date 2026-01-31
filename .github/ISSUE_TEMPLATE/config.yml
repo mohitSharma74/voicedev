@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+    - name: VoiceDev Documentation
+      url: https://github.com/mohitSharma74/voicedev/blob/main/README.md
+      about: Please check our documentation first
+    - name: Discussion Forum
+      url: https://github.com/mohitSharma74/voicedev/discussions
+      about: Ask questions and discuss ideas

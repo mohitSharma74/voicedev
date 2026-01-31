@@ -1,15 +1,35 @@
 ![VoiceDev](media/assets/readme-banner.png)
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/mohitSharma74.voicedev?color=blue&label=VS%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=mohitSharma74.voicedev)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: BSD-3](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3.3-blue.svg)](https://www.typescriptlang.org/)
 [![VS Code](https://img.shields.io/badge/VS%20Code-1.85.0+-blue.svg)](https://code.visualstudio.com/)
 
-# VoiceDev 🎤
+# VoiceDev - Voice Control for VS Code
 
 **Voice-activated commands for VS Code** - speak to code, commit, and control your editor.
 
 > ⚠️ **v0.1.0-preview** - This extension is in early development.
+
+## Why VoiceDev?
+
+### Comparison with VS Code's Built-in Speech Extension
+
+| Feature                | VoiceDev                            | VS Code Speech Extension        |
+| ---------------------- | ----------------------------------- | ------------------------------- |
+| **Voice Commands**     | ✅ Full VS Code command execution   | ❌ Limited to basic navigation  |
+| **Voice Dictation**    | ✅ Text insertion at cursor         | ✅ Text insertion at cursor     |
+| **Git Integration**    | ✅ Voice-to-commit messages         | ❌ No Git integration           |
+| **Privacy Options**    | ✅ Cloud + Local offline mode       | ❌ Cloud-only                   |
+| **Provider Choice**    | ✅ Groq, OpenAI, Local              | ❌ Single cloud provider        |
+| **Setup Complexity**   | ⚠️ Local requires Python/ffmpeg     | ✅ Simple setup                 |
+| **Performance**        | ⚡ Fast (cloud) / 🐌 Slower (local) | ✅ Consistent cloud performance |
+| **Cost**               | 🆓 Free tier + 💰 Paid options      | 🆓 Free (cloud-based)           |
+| **Offline Capability** | ✅ Full offline mode available      | ❌ Requires internet            |
+
+**Choose VoiceDev if you need:** Advanced voice commands, Git integration, privacy-focused offline mode, or multiple provider options.
+
+**Choose VS Code Speech if you want:** Simple voice dictation with minimal setup and consistent cloud performance.
 
 ## Features
 
@@ -83,43 +103,96 @@ Choose your speech-to-text provider:
 
 ## Configuration
 
-Configure VoiceDev in your VS Code settings:
+Customize VoiceDev through your VS Code settings. Add these configurations to your `settings.json`:
 
-\`\`\`json
+### Basic Configuration
+
+```json
 {
-"voicedev.stt.provider": "groq",
-"voicedev.llm.provider": "openrouter",
-"voicedev.llm.model": "anthropic/claude-3-haiku-20240307",
-"voicedev.audio.feedbackSounds": true
+	"voicedev.stt.provider": "groq",
+	"voicedev.llm.provider": "openrouter",
+	"voicedev.llm.model": "anthropic/claude-3-haiku-20240307",
+	"voicedev.audio.feedbackSounds": true
 }
-\`\`\`
+```
 
-## Development
+### Configuration Options
 
-\`\`\`bash
+| Setting                         | Description                   | Values                          | Default                               |
+| ------------------------------- | ----------------------------- | ------------------------------- | ------------------------------------- |
+| `voicedev.stt.provider`         | Speech-to-text provider       | `"groq"`, `"local"`, `"openai"` | `"groq"`                              |
+| `voicedev.llm.provider`         | AI model provider             | `"openrouter"`, `"openai"`      | `"openrouter"`                        |
+| `voicedev.llm.model`            | AI model for commit messages  | Model identifier string         | `"anthropic/claude-3-haiku-20240307"` |
+| `voicedev.audio.feedbackSounds` | Enable/disable audio feedback | `true`, `false`                 | `true`                                |
 
-# Install dependencies
+### How to Apply Configuration
 
-npm install
+1. Open VS Code Settings:
+    - **Windows/Linux**: `Ctrl + ,`
+    - **macOS**: `Cmd + ,`
 
-# Compile
+2. Click the "Open Settings (JSON)" icon in the top-right corner
 
-npm run compile
+3. Add or modify the VoiceDev configuration section
 
-# Watch mode
+4. Save the file - changes take effect immediately
 
-npm run watch
+### Provider-Specific Settings
 
-# Run tests
+#### Groq Provider
 
-npm run test
+```json
+{
+	"voicedev.stt.provider": "groq",
+	"voicedev.stt.groq.apiKey": "your-api-key-here"
+}
+```
 
-# Lint
+#### Local Provider
 
-npm run lint
-\`\`\`
+```json
+{
+	"voicedev.stt.provider": "local",
+	"voicedev.stt.local.pythonPath": "path-to-python-executable"
+}
+```
 
-Press `F5` in VS Code to launch the Extension Development Host.
+#### OpenAI Provider
+
+```json
+{
+	"voicedev.stt.provider": "openai",
+	"voicedev.stt.openai.apiKey": "your-api-key-here"
+}
+```
+
+## For Developers
+
+Interested in contributing to VoiceDev? Check out our [QUICKSTART.md](QUICKSTART.md) guide for detailed setup instructions, development workflow, and information about working with the local/offline speech-to-text provider.
+
+**Quick links:**
+
+- 📖 [Contribution Guidelines](CONTRIBUTING.md)
+- 🐞 [Report Issues](https://github.com/mohitSharma74/voicedev/issues)
+- 💬 [Discussions](https://github.com/mohitSharma74/voicedev/discussions)
+
+### Reporting Issues
+
+We welcome bug reports and feature requests from both technical contributors and non-technical users! When creating a new issue, you'll be guided through our structured templates:
+
+- **🐛 Bug Report**: For reporting bugs and unexpected behavior
+- **🚀 Feature Request**: For suggesting new features and improvements
+- **💬 General Issue**: For questions, discussions, or other topics
+
+**Tips for effective issue reporting:**
+
+- Search existing issues before creating a new one
+- Provide clear, step-by-step reproduction instructions for bugs
+- Include version information (VoiceDev, VS Code, OS)
+- Add screenshots or recordings when helpful
+- Be specific about expected vs actual behavior
+
+Our templates include sections for both non-technical users (basic information) and technical contributors (detailed logs, technical insights).
 
 ## Troubleshooting
 
@@ -183,7 +256,7 @@ Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
-MIT
+BSD 3-Clause License - See [LICENSE](LICENSE) file for details.
 
 ---
 
