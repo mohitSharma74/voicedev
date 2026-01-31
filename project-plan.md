@@ -337,6 +337,8 @@ Insert text at cursor position:
 - [ ] Fix critical bugs
 - [ ] Performance optimization
 - [ ] Handle edge cases
+- [ ] Create a manual test plan with scenarios called manual-test-plan.md and put it in plans directory
+- [ ] Create a checklist file to make it ready for open source called oss-ready-checklist.md and put it in plans directory
 
 **Deliverables**:
 

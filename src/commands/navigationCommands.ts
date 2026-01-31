@@ -5,19 +5,20 @@
 
 import * as vscode from "vscode";
 import { VoiceCommand, ExecutionContext } from "./types";
+import { getNotificationService } from "@ui/notificationService";
 
 /**
  * Show a warning message to the user
  */
 function showWarning(message: string): void {
-	void vscode.window.showWarningMessage(`VoiceDev: ${message}`);
+	void getNotificationService().showWarning(message);
 }
 
 /**
  * Show an error message to the user
  */
 function showError(message: string): void {
-	void vscode.window.showErrorMessage(`VoiceDev: ${message}`);
+	void getNotificationService().showError(message);
 }
 
 /**
@@ -181,7 +182,7 @@ const goToLineCommand: VoiceCommand = {
 		editor.selection = selection;
 		editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
 
-		void vscode.window.showInformationMessage(`Jumped to line ${targetLine}`);
+		getNotificationService().showJumpedToLine(targetLine);
 	},
 };
 

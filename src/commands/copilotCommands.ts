@@ -6,6 +6,7 @@
 import * as vscode from "vscode";
 import { VoiceCommand, ExecutionContext } from "./types";
 import { requireCopilot, getCopilotCliCommand } from "@services/copilotDetection";
+import { getNotificationService } from "@ui/notificationService";
 
 /**
  * Escape quotes in a string for safe shell usage
@@ -18,7 +19,7 @@ function escapeQuotes(str: string): string {
  * Show a warning message to the user
  */
 function showWarning(message: string): void {
-	void vscode.window.showWarningMessage(`VoiceDev: ${message}`);
+	void getNotificationService().showWarning(message);
 }
 
 /**
@@ -52,18 +53,24 @@ async function openCopilotChat(message: string): Promise<void> {
 			await vscode.commands.executeCommand("editor.action.clipboardPasteAction");
 		} catch {
 			// If all else fails, show an error with instructions
-			const choice = await vscode.window.showErrorMessage(
+			await getNotificationService().showError(
 				"Could not open Copilot Chat automatically. Please open it manually and paste your question.",
-				"Open Copilot Chat",
-				"Copy to Clipboard",
+				[
+					{
+						title: "Open Copilot Chat",
+						action: () => vscode.commands.executeCommand("workbench.panel.chat.view.copilot.focus"),
+					},
+					{
+						title: "Copy to Clipboard",
+						action: async () => {
+							await vscode.env.clipboard.writeText(message);
+							await getNotificationService().showInfo(
+								"Question copied to clipboard. Paste it into Copilot Chat.",
+							);
+						},
+					},
+				],
 			);
-
-			if (choice === "Open Copilot Chat") {
-				await vscode.commands.executeCommand("workbench.panel.chat.view.copilot.focus");
-			} else if (choice === "Copy to Clipboard") {
-				await vscode.env.clipboard.writeText(message);
-				void vscode.window.showInformationMessage("Question copied to clipboard. Paste it into Copilot Chat.");
-			}
 		}
 	}
 }

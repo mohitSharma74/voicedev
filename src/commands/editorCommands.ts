@@ -15,6 +15,7 @@ const saveAllCommand: VoiceCommand = {
 	triggers: ["save all", "save everything", "save all files", "save files"],
 	description: "Save all open files",
 	category: "editor",
+	shortcut: "Ctrl+Shift+S",
 	execute: async () => {
 		await vscode.commands.executeCommand("workbench.action.files.saveAll");
 	},
@@ -29,6 +30,7 @@ const formatDocumentCommand: VoiceCommand = {
 	triggers: ["format document", "format file", "format code", "format this", "format"],
 	description: "Format the current document",
 	category: "editor",
+	shortcut: "Shift+Alt+F",
 	execute: async () => {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
@@ -47,6 +49,7 @@ const newTerminalCommand: VoiceCommand = {
 	triggers: ["new terminal", "open terminal", "create terminal", "terminal"],
 	description: "Open a new terminal",
 	category: "terminal",
+	shortcut: "Ctrl+Shift+`",
 	execute: async () => {
 		await vscode.commands.executeCommand("workbench.action.terminal.new");
 	},
@@ -61,6 +64,7 @@ const closeEditorCommand: VoiceCommand = {
 	triggers: ["close editor", "close file", "close tab", "close this"],
 	description: "Close the current editor",
 	category: "editor",
+	shortcut: "Ctrl+W",
 	execute: async () => {
 		await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
 	},

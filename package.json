@@ -61,6 +61,14 @@
 			{
 				"command": "voicedev.openCommandCenter",
 				"title": "VoiceDev: Open Command Center"
+			},
+			{
+				"command": "voicedev.showWelcome",
+				"title": "VoiceDev: Show Welcome Message"
+			},
+			{
+				"command": "voicedev.showShortcuts",
+				"title": "VoiceDev: Show Keyboard Shortcuts"
 			}
 		],
 		"configuration": {
@@ -143,6 +151,11 @@
 				"key": "ctrl+shift+v",
 				"mac": "cmd+shift+v",
 				"when": "voicedev.isRecording"
+			},
+			{
+				"command": "voicedev.listCommands",
+				"key": "ctrl+shift+l",
+				"mac": "cmd+shift+l"
 			}
 		]
 	},

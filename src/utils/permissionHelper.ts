@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { getPlatform } from "@utils/systemCheck.js";
+import { getNotificationService } from "@ui/notificationService";
 
 const PERMISSION_STATE_KEY = "voicedev.permissionGuideDismissed";
 
@@ -13,19 +14,23 @@ export async function showMicrophonePermissionGuide(globalState: vscode.Memento)
 		return;
 	}
 
-	const choice = await vscode.window.showInformationMessage(
-		"VoiceDev needs microphone access on macOS. Please grant permission in System Preferences.",
-		"Open System Preferences",
-		"Don't Show Again",
+	await getNotificationService().showInfo(
+		"VoiceDev needs microphone access on macOS. Grant permission in System Preferences.",
+		[
+			{
+				title: "Open System Preferences",
+				action: async () => {
+					await vscode.env.openExternal(
+						vscode.Uri.parse("x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone"),
+					);
+				},
+			},
+			{
+				title: "Don't Show Again",
+				action: async () => {
+					await globalState.update(PERMISSION_STATE_KEY, true);
+				},
+			},
+		],
 	);
-
-	if (choice === "Open System Preferences") {
-		void vscode.env.openExternal(
-			vscode.Uri.parse("x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone"),
-		);
-	}
-
-	if (choice === "Don't Show Again") {
-		void globalState.update(PERMISSION_STATE_KEY, true);
-	}
 }

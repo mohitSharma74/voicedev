@@ -18,6 +18,11 @@ import { initCopilotDetection, clearCopilotCache } from "@services/copilotDetect
 import { getTerminalHelper } from "@services/terminalHelper";
 import { getFileHelper } from "@services/fileHelper";
 import { ExecutionContext } from "@commands/types";
+import { showShortcuts } from "@ui/shortcutHints";
+import { getNotificationService } from "@ui/notificationService";
+import { ErrorFormatter } from "@utils/errorFormatter";
+import { LoadingIndicator } from "@ui/loadingIndicator";
+import { WelcomeMessageManager } from "@ui/welcomeMessage";
 
 const RECORDING_CONTEXT_KEY = "voicedev.isRecording";
 let lastCapturedBuffer: Buffer | undefined;
@@ -30,6 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const statusBar = new StatusBarManager();
 	context.subscriptions.push(statusBar);
+	const notifications = getNotificationService();
 
 	const recorder = createRecorder(context);
 	context.subscriptions.push(new vscode.Disposable(() => recorder.dispose()));
@@ -44,7 +50,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		transcriptionService.onProviderChange((provider) => {
 			statusBar.setProvider(provider);
-			void vscode.window.showInformationMessage(`VoiceDev: Switched to ${provider} provider`);
+			notifications.showProviderSwitched(provider);
 		}),
 	);
 
@@ -101,13 +107,12 @@ export function activate(context: vscode.ExtensionContext) {
 		// For now, consistent with Phase 1.2:
 		cleanupRecordingState(statusBar);
 		void audioPlayer.play(context, "stop");
-		void vscode.window.showInformationMessage(
-			`Recording stopped after ${featureConfig.recording.maxDurationSeconds}s maximum duration.`,
-		);
+		notifications.showRecordingAutoStopped(featureConfig.recording.maxDurationSeconds);
 	});
 	context.subscriptions.push(autoStopDisposable);
 
 	void showMicrophonePermissionGuide(context.globalState);
+	void WelcomeMessageManager.showIfFirstTime(context);
 
 	const startCommand = vscode.commands.registerCommand("voicedev.startRecording", async () => {
 		if (recorder.isRecording()) {
@@ -123,26 +128,15 @@ export function activate(context: vscode.ExtensionContext) {
 			cleanupRecordingState(statusBar);
 			console.error("Failed to start recording:", error);
 
-			const errorMessage = error instanceof Error ? error.message : String(error);
-
-			if (errorMessage.toLowerCase().includes("permission") || errorMessage.toLowerCase().includes("access")) {
-				const choice = await vscode.window.showErrorMessage(
-					"Microphone permission denied. Please grant VS Code access to your microphone.",
-					"Open System Preferences",
-				);
-				if (choice === "Open System Preferences") {
-					void vscode.env.openExternal(
-						vscode.Uri.parse("x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone"),
-					);
-				}
+			const formatted = ErrorFormatter.formatRecordingError(
+				error instanceof Error ? error : new Error(String(error)),
+			);
+			if (formatted.message.toLowerCase().includes("permission")) {
+				await notifications.showMicrophonePermissionError();
 			} else {
-				void vscode.window.showErrorMessage(
-					`Unable to start recording: ${errorMessage}\n\nPlease check:\n` +
-						"• Microphone is connected\n" +
-						"• VS Code has microphone permissions\n" +
-						"• No other app is using the microphone",
-				);
+				void notifications.showError(formatted.message, formatted.actions);
 			}
+			statusBar.setError("Recording failed");
 		}
 	});
 
@@ -160,6 +154,7 @@ export function activate(context: vscode.ExtensionContext) {
 			// Start transcription flow
 			if (buffer.length > 0) {
 				statusBar.setTranscribing();
+				let usedTransientState = false;
 				try {
 					// Encode to WAV for the API
 					const wavBuffer = encodeWav(buffer, {
@@ -199,10 +194,21 @@ export function activate(context: vscode.ExtensionContext) {
 							const execResult = await commandExecutor.execute(parsedResult, ctx);
 							if (execResult && !execResult.success) {
 								console.error("Command execution failed:", execResult.error);
+								statusBar.setError("Command failed");
+								usedTransientState = true;
+							} else if (execResult?.success) {
+								statusBar.setSuccess("Command executed");
+								usedTransientState = true;
 							}
 						} catch (error: unknown) {
-							const errorMessage = error instanceof Error ? error.message : "Unknown error";
-							void vscode.window.showErrorMessage(`Command execution failed: ${errorMessage}`);
+							const execError = error instanceof Error ? error : new Error("Unknown error");
+							const formatted = ErrorFormatter.formatCommandExecutionError(
+								parsedResult.command.description,
+								execError,
+							);
+							void notifications.showError(formatted.message, formatted.actions);
+							statusBar.setError("Command failed");
+							usedTransientState = true;
 						}
 					} else {
 						// Fallback to dictation: Insert text into editor or send to terminal
@@ -217,30 +223,39 @@ export function activate(context: vscode.ExtensionContext) {
 									? "terminal"
 									: "unknown";
 
-							const preview = text.length > 50 ? `${text.substring(0, 50)}...` : text;
-							void vscode.window.showInformationMessage(`Inserted to ${insertContext}: "${preview}"`);
+							notifications.showTranscriptionResult(text, insertContext);
+							statusBar.setSuccess("Inserted");
+							usedTransientState = true;
 						} catch (error: unknown) {
 							const errorMessage = error instanceof Error ? error.message : "Unknown error";
-							void vscode.window.showErrorMessage(`Failed to insert text: ${errorMessage}`);
+							notifications.showTextInsertionFailed(errorMessage);
+							statusBar.setError("Insert failed");
+							usedTransientState = true;
 						}
 					}
 				} catch (error: unknown) {
-					const errorMessage = error instanceof Error ? error.message : "Unknown error";
-					void vscode.window.showErrorMessage(`Transcription failed: ${errorMessage}`);
+					const transcriptionError = error instanceof Error ? error : new Error("Unknown error");
+					const formatted = ErrorFormatter.formatTranscriptionError(transcriptionError);
+					void notifications.showError(formatted.message, formatted.actions);
+					statusBar.setError("Transcription failed");
+					usedTransientState = true;
 				} finally {
-					statusBar.setIdle();
+					if (!usedTransientState) {
+						statusBar.setIdle();
+					}
 				}
 			}
 		} catch (error) {
-			void vscode.window.showErrorMessage("Failed to stop recording.");
+			void notifications.showError("Failed to stop recording.");
 			console.error(error);
 			cleanupRecordingState(statusBar);
+			statusBar.setError("Stop failed");
 		}
 	});
 
 	const saveCommand = vscode.commands.registerCommand("voicedev.saveRecording", async () => {
 		if (!lastCapturedBuffer || lastCapturedBuffer.length === 0) {
-			void vscode.window.showWarningMessage("No recording to save. Record audio first.");
+			notifications.showNoRecordingToSave();
 			return;
 		}
 
@@ -281,13 +296,12 @@ export function activate(context: vscode.ExtensionContext) {
 			);
 			const sizeKB = (wavBuffer.length / 1024).toFixed(1);
 
-			void vscode.window.showInformationMessage(
-				`Recording saved: ${path.basename(uri.fsPath)} (${duration.toFixed(1)}s, ${sizeKB} KB)`,
-			);
+			notifications.showRecordingSaved(path.basename(uri.fsPath), `${duration.toFixed(1)}s`, `${sizeKB} KB`);
+			statusBar.setSuccess("Saved");
 		} catch (error) {
-			void vscode.window.showErrorMessage(
-				`Failed to save recording: ${error instanceof Error ? error.message : "Unknown error"}`,
-			);
+			const errorMessage = error instanceof Error ? error.message : "Unknown error";
+			void notifications.showError(`Failed to save recording: ${errorMessage}`);
+			statusBar.setError("Save failed");
 			console.error(error);
 		}
 	});
@@ -311,15 +325,20 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 
 		if (key) {
-			await SecretStorageHelper.getInstance().setApiKey(provider, key);
-			void vscode.window.showInformationMessage(`${provider.toUpperCase()} API key saved securely.`);
+			await LoadingIndicator.withApiKeyValidation(async () => {
+				await SecretStorageHelper.getInstance().setApiKey(provider, key);
+				await transcriptionService.validateApiKey();
+			});
+			notifications.showApiKeySaved(provider.toUpperCase());
+			statusBar.setSuccess("API key saved");
 		}
 	});
 
 	const clearApiKeyCommand = vscode.commands.registerCommand("voicedev.clearApiKey", async () => {
 		const provider = "groq"; // Hardcoded for Phase 1.3
 		await SecretStorageHelper.getInstance().deleteApiKey(provider);
-		void vscode.window.showInformationMessage(`${provider.toUpperCase()} API key removed.`);
+		notifications.showApiKeyRemoved(provider.toUpperCase());
+		statusBar.setSuccess("API key cleared");
 	});
 
 	// List Voice Commands - opens quick pick with all available commands
@@ -329,13 +348,21 @@ export function activate(context: vscode.ExtensionContext) {
 		if (listCommand) {
 			await listCommand.execute();
 		} else {
-			void vscode.window.showWarningMessage("Voice commands not loaded yet. Please try again.");
+			void notifications.showWarning("Voice commands not loaded yet. Please try again.");
 		}
 	});
 
 	// Open Command Center - opens webview with all commands
 	const openCommandCenterCmd = vscode.commands.registerCommand("voicedev.openCommandCenter", () => {
 		CommandCenterPanel.createOrShow(context.extensionUri);
+	});
+
+	const showWelcomeCmd = vscode.commands.registerCommand("voicedev.showWelcome", async () => {
+		await WelcomeMessageManager.show(context);
+	});
+
+	const showShortcutsCmd = vscode.commands.registerCommand("voicedev.showShortcuts", async () => {
+		await showShortcuts();
 	});
 
 	context.subscriptions.push(
@@ -347,6 +374,8 @@ export function activate(context: vscode.ExtensionContext) {
 		clearApiKeyCommand,
 		listCommandsCmd,
 		openCommandCenterCmd,
+		showWelcomeCmd,
+		showShortcutsCmd,
 	);
 }
 

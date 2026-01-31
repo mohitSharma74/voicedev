@@ -5,6 +5,7 @@
 
 import * as vscode from "vscode";
 import { FileHelper } from "@commands/types";
+import { getNotificationService } from "@ui/notificationService";
 
 /**
  * Singleton class that provides file operations
@@ -35,7 +36,7 @@ class FileHelperImpl implements FileHelper {
 		// Get the workspace folders
 		const workspaceFolders = vscode.workspace.workspaceFolders;
 		if (!workspaceFolders || workspaceFolders.length === 0) {
-			void vscode.window.showWarningMessage("No workspace folder is open");
+			void getNotificationService().showNoWorkspace();
 			return undefined;
 		}
 

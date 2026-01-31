@@ -6,7 +6,8 @@ export class StatusBarManager {
 	private recordingInterval: NodeJS.Timeout | undefined;
 	private recordingSeconds = 0;
 	private currentProvider: SttProviderType = "groq";
-	private currentState: "idle" | "recording" | "transcribing" = "idle";
+	private currentState: "idle" | "recording" | "transcribing" | "success" | "error" = "idle";
+	private resetTimeout: NodeJS.Timeout | undefined;
 
 	constructor() {
 		this.item = vscode.window.createStatusBarItem("voicedev.statusBar", vscode.StatusBarAlignment.Right, 50);
@@ -68,35 +69,59 @@ export class StatusBarManager {
 	setIdle(): void {
 		this.currentState = "idle";
 		this.clearInterval();
+		this.clearResetTimeout();
 		this.recordingSeconds = 0;
-		this.item.text = `${this.getProviderIcon()} $(mic) VoiceDev`;
-		this.item.tooltip = `VoiceDev - Provider: ${this.getProviderDisplayName()}\nClick to start recording (or press Ctrl+Shift+V / Cmd+Shift+V)`;
+		this.item.text = `${this.getProviderIcon()} $(unmute) VoiceDev`;
+		this.item.tooltip = this.buildTooltip();
 		this.item.backgroundColor = undefined;
 	}
 
 	setRecording(): void {
 		this.currentState = "recording";
 		this.clearInterval();
+		this.clearResetTimeout();
 		this.recordingSeconds = 0;
-		this.item.text = `${this.getProviderIcon()} $(pulse) Recording... 0s`;
-		this.item.tooltip = `Recording with ${this.getProviderDisplayName()} — click to stop`;
+		this.item.text = `${this.getProviderIcon()} $(record-keys) Recording... 0s`;
+		this.item.tooltip = this.buildTooltip();
 		this.item.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
 		this.recordingInterval = setInterval(() => {
 			this.recordingSeconds += 1;
-			this.item.text = `${this.getProviderIcon()} $(pulse) Recording... ${this.recordingSeconds}s`;
+			this.item.text = `${this.getProviderIcon()} $(record-keys) Recording... ${this.recordingSeconds}s`;
 		}, 1000);
 	}
 
 	setTranscribing(): void {
 		this.currentState = "transcribing";
 		this.clearInterval();
-		this.item.text = `${this.getProviderIcon()} $(sync~spin) Transcribing...`;
-		this.item.tooltip = `Transcribing with ${this.getProviderDisplayName()}...`;
+		this.clearResetTimeout();
+		this.item.text = `${this.getProviderIcon()} $(loading~spin) Transcribing...`;
+		this.item.tooltip = this.buildTooltip();
 		this.item.backgroundColor = undefined;
+	}
+
+	setSuccess(action: string): void {
+		this.currentState = "success";
+		this.clearInterval();
+		this.clearResetTimeout();
+		this.item.text = `${this.getProviderIcon()} $(check) ${action}`;
+		this.item.tooltip = this.buildTooltip();
+		this.item.backgroundColor = new vscode.ThemeColor("statusBarItem.prominentBackground");
+		this.resetTimeout = setTimeout(() => this.setIdle(), 2000);
+	}
+
+	setError(message: string): void {
+		this.currentState = "error";
+		this.clearInterval();
+		this.clearResetTimeout();
+		this.item.text = `${this.getProviderIcon()} $(error) ${message}`;
+		this.item.tooltip = this.buildTooltip();
+		this.item.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground");
+		this.resetTimeout = setTimeout(() => this.setIdle(), 3000);
 	}
 
 	dispose(): void {
 		this.clearInterval();
+		this.clearResetTimeout();
 		this.item.dispose();
 	}
 
@@ -105,5 +130,24 @@ export class StatusBarManager {
 			clearInterval(this.recordingInterval);
 			this.recordingInterval = undefined;
 		}
+	}
+
+	private clearResetTimeout(): void {
+		if (this.resetTimeout) {
+			clearTimeout(this.resetTimeout);
+			this.resetTimeout = undefined;
+		}
+	}
+
+	private buildTooltip(): vscode.MarkdownString {
+		const tooltip = new vscode.MarkdownString(
+			`**VoiceDev** - ${this.getProviderDisplayName()}\n\n` +
+				"**Keyboard Shortcuts:**\n" +
+				"- `Ctrl+Shift+V` (Cmd+Shift+V on Mac) - Toggle recording\n" +
+				"- `Ctrl+Shift+L` - List voice commands\n\n" +
+				`Click to ${this.currentState === "recording" ? "stop" : "start"} recording`,
+		);
+		tooltip.isTrusted = true;
+		return tooltip;
 	}
 }

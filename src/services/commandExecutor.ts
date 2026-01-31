@@ -3,9 +3,11 @@
  * Executes voice commands and provides user feedback
  */
 
-import * as vscode from "vscode";
 import { VoiceCommand, ParsedResult, ExecutionContext } from "@commands/types";
 import { isCommandDisabled } from "./commandSettings";
+import { getNotificationService } from "@ui/notificationService";
+import { ErrorFormatter } from "@utils/errorFormatter";
+import { LoadingIndicator } from "@ui/loadingIndicator";
 
 /**
  * Result of a command execution attempt
@@ -66,9 +68,7 @@ export class CommandExecutor {
 	async executeCommand(command: VoiceCommand, ctx?: ExecutionContext): Promise<ExecutionResult> {
 		const startTime = Date.now();
 		if (isCommandDisabled(command.id)) {
-			void vscode.window.showWarningMessage(
-				`VoiceDev: Command "${command.description}" is disabled in settings.`,
-			);
+			getNotificationService().showCommandDisabled(command.description);
 			return {
 				success: false,
 				command,
@@ -78,7 +78,9 @@ export class CommandExecutor {
 		}
 
 		try {
-			await command.execute(ctx);
+			await LoadingIndicator.withCommandExecution(command.description, async () => {
+				await command.execute(ctx);
+			});
 
 			const executionTimeMs = Date.now() - startTime;
 			const result: ExecutionResult = {
@@ -118,18 +120,15 @@ export class CommandExecutor {
 	 */
 	private showSuccessNotification(command: VoiceCommand): void {
 		const icon = this.getCategoryIcon(command.category);
-		const message = `${icon} ${command.description}`;
-
-		void vscode.window.showInformationMessage(message);
+		getNotificationService().showCommandExecuted(command.description, icon);
 	}
 
 	/**
 	 * Show an error notification for a failed command
 	 */
 	private showErrorNotification(command: VoiceCommand, error: Error): void {
-		const message = `Failed to execute "${command.description}": ${error.message}`;
-
-		void vscode.window.showErrorMessage(message);
+		const formatted = ErrorFormatter.formatCommandExecutionError(command.description, error);
+		void getNotificationService().showError(formatted.message, formatted.actions);
 	}
 
 	/**
