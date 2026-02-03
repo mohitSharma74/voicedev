@@ -170,7 +170,11 @@
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"prepare": "husky",
-		"test": "vscode-test"
+		"test": "vscode-test",
+		"package": "npm run compile && npm run lint && vsce package --out dist/",
+		"vsix": "vsce package --out dist/",
+		"package:install": "code --install-extension dist/voicedev-0.1.0.vsix",
+		"build:install": "npm run package && npm run package:install"
 	},
 	"devDependencies": {
 		"@types/glob": "^8.1.0",
@@ -183,6 +187,7 @@
 		"@typescript-eslint/parser": "^6.15.0",
 		"@vscode/test-cli": "^0.0.4",
 		"@vscode/test-electron": "^2.3.8",
+		"@vscode/vsce": "^2.32.0",
 		"chai": "^4.3.10",
 		"concurrently": "^9.2.1",
 		"eslint": "^8.56.0",
