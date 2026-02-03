@@ -6,7 +6,7 @@ const PVRECORDER_DESKTOP_BINARIES = [
 	"mac/x86_64/pv_recorder.node",
 	"windows/amd64/pv_recorder.node",
 	"windows/arm64/pv_recorder.node",
-	"linux/x86_64/pv_recorder.node"
+	"linux/x86_64/pv_recorder.node",
 ];
 
 module.exports = {
@@ -16,12 +16,12 @@ module.exports = {
 		path: path.resolve(__dirname, "dist"),
 		filename: "extension.js",
 		libraryTarget: "commonjs2",
-		devtoolModuleFilenameTemplate: "../[resource-path]"
+		devtoolModuleFilenameTemplate: "../[resource-path]",
 	},
 	devtool: "source-map",
 	externals: {
 		vscode: "commonjs vscode",
-		"@picovoice/pvrecorder-node": "commonjs @picovoice/pvrecorder-node"
+		"@picovoice/pvrecorder-node": "commonjs @picovoice/pvrecorder-node",
 	},
 	resolve: {
 		extensions: [".ts", ".js"],
@@ -32,8 +32,8 @@ module.exports = {
 			"@types": path.resolve(__dirname, "src/types"),
 			"@config": path.resolve(__dirname, "src/config"),
 			"@ui": path.resolve(__dirname, "src/ui"),
-			"@commands": path.resolve(__dirname, "src/commands")
-		}
+			"@commands": path.resolve(__dirname, "src/commands"),
+		},
 	},
 	module: {
 		rules: [
@@ -43,18 +43,18 @@ module.exports = {
 				use: [
 					{
 						loader: "ts-loader",
-						options: { configFile: "tsconfig.json" }
-					}
-				]
-			}
-		]
+						options: { configFile: "tsconfig.json" },
+					},
+				],
+			},
+		],
 	},
 	plugins: [
 		new CopyWebpackPlugin({
 			patterns: PVRECORDER_DESKTOP_BINARIES.map((binaryPath) => ({
 				from: path.join("node_modules", "@picovoice", "pvrecorder-node", "lib", binaryPath),
-				to: path.join("node_modules", "@picovoice", "pvrecorder-node", "lib", binaryPath)
-			}))
-		})
-	]
+				to: path.join("node_modules", "@picovoice", "pvrecorder-node", "lib", binaryPath),
+			})),
+		}),
+	],
 };
