@@ -27,7 +27,7 @@
 	"activationEvents": [
 		"onStartupFinished"
 	],
-	"main": "./out/extension.js",
+	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
@@ -160,10 +160,12 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./ && tsc-alias -p ./tsconfig.json",
+		"vscode:prepublish": "npm run esbuild -- --production",
+		"esbuild": "node esbuild.js",
+		"esbuild-watch": "node esbuild.js --watch",
+		"compile": "npm run esbuild",
 		"compile:test": "tsc -p ./tsconfig.test.json && tsc-alias -p ./tsconfig.test.json",
-		"watch": "concurrently \"tsc -watch -p ./\" \"tsc-alias -p ./tsconfig.json --watch\"",
+		"watch": "npm run esbuild-watch",
 		"pretest": "npm run compile && npm run compile:test && npm run lint",
 		"lint": "eslint src --ext ts --max-warnings=0",
 		"lint:fix": "eslint src --ext ts --fix",
@@ -171,10 +173,11 @@
 		"format:check": "prettier --check .",
 		"prepare": "husky",
 		"test": "vscode-test",
-		"package": "npm run compile && npm run lint && vsce package --out dist/",
-		"vsix": "vsce package --out dist/",
-		"package:install": "code --install-extension dist/voicedev-0.1.0.vsix",
-		"build:install": "npm run package && npm run package:install"
+		"package": "npm run esbuild -- --production && vsce package --out vsix-build",
+		"vsix": "vsce package --out vsix-build",
+		"package:install": "code --install-extension vsix-build/voicedev-0.1.0.vsix",
+		"build:install": "npm run package && npm run package:install",
+		"vsix:tree": "vsce ls --tree"
 	},
 	"devDependencies": {
 		"@types/glob": "^8.1.0",
@@ -187,9 +190,10 @@
 		"@typescript-eslint/parser": "^6.15.0",
 		"@vscode/test-cli": "^0.0.4",
 		"@vscode/test-electron": "^2.3.8",
-		"@vscode/vsce": "^2.32.0",
+		"@vscode/vsce": "^3.7.1",
 		"chai": "^4.3.10",
 		"concurrently": "^9.2.1",
+		"esbuild": "^0.27.2",
 		"eslint": "^8.56.0",
 		"eslint-config-prettier": "^9.0.0",
 		"eslint-plugin-prettier": "^5.0.1",
@@ -211,7 +215,7 @@
 		]
 	},
 	"dependencies": {
-		"@picovoice/pvrecorder-node": "^1.2.2",
+		"@picovoice/pvrecorder-node": "^1.2.8",
 		"fuse.js": "^7.1.0",
 		"glob": "^10.3.10",
 		"groq-sdk": "^0.37.0"
