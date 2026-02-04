@@ -12,7 +12,7 @@ plans/
 .DS_Store
 *.map
 src/
-webpack.config.js
+esbuild.js
 tsconfig.json
 tsconfig.test.json
 .eslintrc.json
