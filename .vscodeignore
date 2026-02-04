@@ -17,8 +17,6 @@ tsconfig.json
 tsconfig.test.json
 .eslintrc.json
 .prettierrc
-dist/
-!dist/**
 node_modules/**
 !node_modules/@picovoice/pvrecorder-node/lib/mac/**/pv_recorder.node
 !node_modules/@picovoice/pvrecorder-node/lib/windows/**/pv_recorder.node
