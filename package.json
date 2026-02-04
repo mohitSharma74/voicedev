@@ -162,6 +162,8 @@
 	"scripts": {
 		"vscode:prepublish": "webpack --mode production",
 		"clean": "rm -rf out",
+		"clean:dist:win": "powershell -Command \"Remove-Item -Recurse -Force dist -ErrorAction SilentlyContinue\"",
+		"clean:dist": "rm -rf dist",
 		"compile": "webpack --mode development",
 		"compile:prod": "webpack --mode production",
 		"compile:test": "tsc -p ./tsconfig.test.json && tsc-alias -p ./tsconfig.test.json",
@@ -173,8 +175,8 @@
 		"format:check": "prettier --check .",
 		"prepare": "husky",
 		"test": "vscode-test",
-		"package": "npm run compile:prod && npm run lint && mkdir -p dist && vsce package --out dist/",
-		"vsix": "vsce package --out dist/",
+		"package": "npm run compile:prod && npm run lint && npx vsce package --out dist/",
+		"vsix": "npx vsce package --out dist/",
 		"package:install": "code --install-extension dist/voicedev-0.1.0.vsix",
 		"build:install": "npm run package && npm run package:install"
 	},
