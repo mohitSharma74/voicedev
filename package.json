@@ -79,11 +79,13 @@
 					"default": "groq",
 					"enum": [
 						"groq",
+						"mistral",
 						"openai",
 						"local"
 					],
 					"enumDescriptions": [
 						"Fast cloud API with free tier (recommended for getting started)",
+						"Mistral Voxtral — fast cloud transcription",
 						"Paid cloud API",
 						"Privacy-first: runs fully offline, zero cost (requires Python 3.9+)"
 					],
@@ -215,6 +217,7 @@
 		]
 	},
 	"dependencies": {
+		"@mistralai/mistralai": "^1.14.0",
 		"@picovoice/pvrecorder-node": "^1.2.8",
 		"fuse.js": "^7.1.0",
 		"glob": "^10.3.10",

@@ -43,11 +43,12 @@ VoiceDev brings voice control to your development workflow:
 
 Choose your speech-to-text provider:
 
-| Provider           | Speed        | Cost         | Privacy          | Setup                   |
-| ------------------ | ------------ | ------------ | ---------------- | ----------------------- |
-| **Groq** (default) | ⚡ Very Fast | 🆓 Free tier | ☁️ Cloud         | API key only            |
-| **Local**          | 🐌 Slower    | 🆓 Zero cost | 🔒 Fully offline | One-time setup (~2 min) |
-| **OpenAI**         | 🐢 Medium    | 💰 Paid      | ☁️ Cloud         | API key only            |
+| Provider              | Speed        | Cost         | Privacy          | Setup                   |
+| --------------------- | ------------ | ------------ | ---------------- | ----------------------- |
+| **Groq** (default)    | ⚡ Very Fast | 🆓 Free tier | ☁️ Cloud         | API key only            |
+| **Voxtral (Mistral)** | ⚡ Very Fast | 🆓 Free tier | ☁️ Cloud         | API key only            |
+| **Local**             | 🐌 Slower    | 🆓 Zero cost | 🔒 Fully offline | One-time setup (~2 min) |
+| **OpenAI**            | 🐢 Medium    | 💰 Paid      | ☁️ Cloud         | API key only            |
 
 **Privacy-first option**: Local provider keeps your voice on your machine - no data sent to cloud.
 
@@ -88,11 +89,20 @@ Choose your speech-to-text provider:
 
 1. Get a free API key from [console.groq.com](https://console.groq.com)
 2. Open Command Palette (`Cmd/Ctrl + Shift + P`)
-3. Run `VoiceDev: Set API Key` and paste your Groq key
+3. Run `VoiceDev: Set API Key`, select "Groq", and paste your key
 4. Press `Ctrl+Shift+V` to start recording
 5. Speak a command like "save all" or dictate text
 
-### Option B: Local (Private & Offline - Zero Cost)
+### Option B: Mistral (Fast & Free - Voxtral powered)
+
+1. Get a free API key from [console.mistral.ai](https://console.mistral.ai)
+2. Open VS Code Settings (`Cmd/Ctrl + ,`)
+3. Search for "voicedev.stt.provider" and select "mistral"
+4. Open Command Palette and run `VoiceDev: Set API Key`, select "Mistral"
+5. Press `Ctrl+Shift+V` to start recording
+6. Speak a command or dictate text
+
+### Option C: Local (Private & Offline - Zero Cost)
 
 1. Install Python 3.9-3.12 and ffmpeg (if not already installed)
 2. Open VS Code Settings (`Cmd/Ctrl + ,`)
@@ -118,12 +128,12 @@ Customize VoiceDev through your VS Code settings. Add these configurations to yo
 
 ### Configuration Options
 
-| Setting                         | Description                   | Values                          | Default                               |
-| ------------------------------- | ----------------------------- | ------------------------------- | ------------------------------------- |
-| `voicedev.stt.provider`         | Speech-to-text provider       | `"groq"`, `"local"`, `"openai"` | `"groq"`                              |
-| `voicedev.llm.provider`         | AI model provider             | `"openrouter"`, `"openai"`      | `"openrouter"`                        |
-| `voicedev.llm.model`            | AI model for commit messages  | Model identifier string         | `"anthropic/claude-3-haiku-20240307"` |
-| `voicedev.audio.feedbackSounds` | Enable/disable audio feedback | `true`, `false`                 | `true`                                |
+| Setting                         | Description                   | Values                                       | Default                               |
+| ------------------------------- | ----------------------------- | -------------------------------------------- | ------------------------------------- |
+| `voicedev.stt.provider`         | Speech-to-text provider       | `"groq"`, `"mistral"`, `"openai"`, `"local"` | `"groq"`                              |
+| `voicedev.llm.provider`         | AI model provider             | `"openrouter"`, `"openai"`                   | `"openrouter"`                        |
+| `voicedev.llm.model`            | AI model for commit messages  | Model identifier string                      | `"anthropic/claude-3-haiku-20240307"` |
+| `voicedev.audio.feedbackSounds` | Enable/disable audio feedback | `true`, `false`                              | `true`                                |
 
 ### How to Apply Configuration
 
@@ -143,10 +153,21 @@ Customize VoiceDev through your VS Code settings. Add these configurations to yo
 
 ```json
 {
-	"voicedev.stt.provider": "groq",
-	"voicedev.stt.groq.apiKey": "your-api-key-here"
+	"voicedev.stt.provider": "groq"
 }
 ```
+
+**Note**: Use `VoiceDev: Set API Key` command to securely store your Groq API key.
+
+#### Mistral Provider
+
+```json
+{
+	"voicedev.stt.provider": "mistral"
+}
+```
+
+**Note**: Use `VoiceDev: Set API Key` command to securely store your Mistral API key. Powered by Mistral's Voxtral-mini model for fast, accurate transcription.
 
 #### Local Provider
 
@@ -161,10 +182,11 @@ Customize VoiceDev through your VS Code settings. Add these configurations to yo
 
 ```json
 {
-	"voicedev.stt.provider": "openai",
-	"voicedev.stt.openai.apiKey": "your-api-key-here"
+	"voicedev.stt.provider": "openai"
 }
 ```
+
+**Note**: Use `VoiceDev: Set API Key` command to securely store your OpenAI API key. The OpenAI provider integration is planned for a future release.
 
 ## For Developers
 
@@ -244,8 +266,9 @@ Our templates include sections for both non-technical users (basic information) 
 
 - **v0.1.0-preview** (Current):
     - ✅ Core voice commands and git integration
-    - ✅ Multi-provider support (Groq, OpenAI, Local)
+    - ✅ Multi-provider support (Groq, Mistral, OpenAI, Local)
     - ✅ Privacy-first offline mode with faster-whisper
+    - ✅ Mistral Voxtral integration for fast cloud transcription
 - **v0.2.0**: Code generation from voice
 - **v0.3.0**: Custom voice commands and snippets
 - **v1.0.0**: Production release with full cross-platform support

@@ -1,9 +1,10 @@
 import * as vscode from "vscode";
 import { ITranscriptionProvider } from "@services/providers/ITranscriptionProvider";
 import { GroqProvider } from "@services/providers/groqProvider";
+import { MistralProvider } from "@services/providers/mistralProvider";
 import { LocalWhisperProvider } from "@services/providers/localWhisperProvider";
 
-export type SttProviderType = "groq" | "openai" | "local";
+export type SttProviderType = "groq" | "mistral" | "openai" | "local";
 
 export class TranscriptionService {
 	private provider: ITranscriptionProvider;
@@ -36,6 +37,8 @@ export class TranscriptionService {
 		switch (type) {
 			case "local":
 				return new LocalWhisperProvider(this.context);
+			case "mistral":
+				return new MistralProvider();
 			case "openai":
 				// Future: OpenAI provider
 				console.warn("OpenAI provider not yet implemented, falling back to Groq");
