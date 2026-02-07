@@ -1,4 +1,4 @@
-![Voice-powered commands for VS Code](media/assets/logo-128x128.png)
+![Voice-powered commands for VS Code](https://raw.githubusercontent.com/mohitSharma74/voicedev/main/media/assets/logo-128x128.png)
 
 # Changelog
 
