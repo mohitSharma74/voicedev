@@ -19,13 +19,13 @@ export class MistralProvider implements ITranscriptionProvider {
 			}
 
 			try {
-				// Convert Buffer to File for the Mistral SDK
-				const blob = new Blob([audioBuffer], { type: "audio/wav" });
-				const file = new File([blob], "audio.wav", { type: "audio/wav" });
-
+				// Use Node-compatible Buffer upload for the Mistral SDK
 				const transcription = await this.client.audio.transcriptions.complete({
 					model: "voxtral-mini-latest",
-					file: file,
+					file: {
+						fileName: "audio.wav",
+						content: audioBuffer,
+					},
 				});
 
 				return transcription.text || "";

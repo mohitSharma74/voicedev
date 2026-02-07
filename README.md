@@ -1,4 +1,4 @@
-![VoiceDev](extension/media/assets/readme-banner.png)
+![VoiceDev](media/assets/readme-banner.png)
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/mohitSharma74.voicedev?color=blue&label=VS%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=mohitSharma74.voicedev)
 [![License: BSD-3](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
@@ -186,7 +186,7 @@ Customize VoiceDev through your VS Code settings. Add these configurations to yo
 }
 ```
 
-**Note**: Use `VoiceDev: Set API Key` command to securely store your OpenAI API key.
+**Note**: Use `VoiceDev: Set API Key` command to securely store your OpenAI API key. The OpenAI provider integration is planned for a future release.
 
 ## For Developers
 
