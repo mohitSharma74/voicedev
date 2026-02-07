@@ -320,6 +320,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const providers = [
 			{ label: "Groq", value: "groq" },
 			{ label: "Mistral", value: "mistral" },
+			{ label: "OpenAI", value: "openai" },
 		];
 
 		const selected = await vscode.window.showQuickPick(providers, {
@@ -341,7 +342,11 @@ export function activate(context: vscode.ExtensionContext) {
 		if (key) {
 			await LoadingIndicator.withApiKeyValidation(async () => {
 				await SecretStorageHelper.getInstance().setApiKey(provider, key);
-				await transcriptionService.validateApiKey();
+				// Validate that the key was stored successfully
+				const storedKey = await SecretStorageHelper.getInstance().getApiKey(provider);
+				if (!storedKey) {
+					throw new Error("Failed to store API key");
+				}
 			});
 			notifications.showApiKeySaved(selected.label);
 			statusBar.setSuccess("API key saved");
@@ -353,6 +358,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const providers = [
 			{ label: "Groq", value: "groq" },
 			{ label: "Mistral", value: "mistral" },
+			{ label: "OpenAI", value: "openai" },
 		];
 
 		const selected = await vscode.window.showQuickPick(providers, {

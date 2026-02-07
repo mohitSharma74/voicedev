@@ -45,6 +45,8 @@ export class StatusBarManager {
 				return "$(device-desktop)";
 			case "openai":
 				return "$(hub)";
+			case "mistral":
+				return "$(cloud)";
 			case "groq":
 			default:
 				return "$(cloud)";
@@ -60,6 +62,8 @@ export class StatusBarManager {
 				return "Local Whisper (offline)";
 			case "openai":
 				return "OpenAI Whisper";
+			case "mistral":
+				return "Mistral Voxtral";
 			case "groq":
 			default:
 				return "Groq Whisper (cloud)";
