@@ -33,7 +33,7 @@ async function main() {
 		sourcesContent: false,
 		platform: "node",
 		outfile: "dist/extension.js",
-		external: ["vscode", "@picovoice/pvrecorder-node", "@mistralai/mistralai"],
+		external: ["vscode", "@picovoice/pvrecorder-node"],
 		logLevel: "silent",
 		plugins: [
 			/* add to the end of plugins array */
