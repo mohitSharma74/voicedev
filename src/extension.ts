@@ -316,11 +316,25 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// API Key Commands
 	const setApiKeyCommand = vscode.commands.registerCommand("voicedev.setApiKey", async () => {
-		const provider = "groq"; // Hardcoded for Phase 1.3
+		// Show provider quick pick (exclude local since it doesn't need an API key)
+		const providers = [
+			{ label: "Groq", value: "groq" },
+			{ label: "Mistral", value: "mistral" },
+		];
+
+		const selected = await vscode.window.showQuickPick(providers, {
+			placeHolder: "Select the provider for which you want to set the API key",
+		});
+
+		if (!selected) {
+			return;
+		}
+
+		const provider = selected.value;
 		const key = await vscode.window.showInputBox({
-			prompt: `Enter your ${provider.toUpperCase()} API Key`,
+			prompt: `Enter your ${selected.label} API Key`,
 			password: true,
-			placeHolder: "gsk_...",
+			placeHolder: provider === "groq" ? "gsk_..." : "...",
 			ignoreFocusOut: true,
 		});
 
@@ -329,15 +343,29 @@ export function activate(context: vscode.ExtensionContext) {
 				await SecretStorageHelper.getInstance().setApiKey(provider, key);
 				await transcriptionService.validateApiKey();
 			});
-			notifications.showApiKeySaved(provider.toUpperCase());
+			notifications.showApiKeySaved(selected.label);
 			statusBar.setSuccess("API key saved");
 		}
 	});
 
 	const clearApiKeyCommand = vscode.commands.registerCommand("voicedev.clearApiKey", async () => {
-		const provider = "groq"; // Hardcoded for Phase 1.3
+		// Show provider quick pick (exclude local since it doesn't need an API key)
+		const providers = [
+			{ label: "Groq", value: "groq" },
+			{ label: "Mistral", value: "mistral" },
+		];
+
+		const selected = await vscode.window.showQuickPick(providers, {
+			placeHolder: "Select the provider for which you want to clear the API key",
+		});
+
+		if (!selected) {
+			return;
+		}
+
+		const provider = selected.value;
 		await SecretStorageHelper.getInstance().deleteApiKey(provider);
-		notifications.showApiKeyRemoved(provider.toUpperCase());
+		notifications.showApiKeyRemoved(selected.label);
 		statusBar.setSuccess("API key cleared");
 	});
 
