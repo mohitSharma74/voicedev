@@ -72,6 +72,18 @@ describe("Copilot Commands", () => {
 		assert.strictEqual(command, 'copilot -p "Say \\"hello world\\""');
 	});
 
+	it("escapes backslashes in prompt", () => {
+		const { module } = loadCopilotCommandsModule({ cliCommand: "copilot" });
+		const command = module.buildCopilotPromptCommand("Path: C:\\Users\\test");
+		assert.strictEqual(command, 'copilot -p "Path: C:\\\\Users\\\\test"');
+	});
+
+	it("escapes backslashes before quotes", () => {
+		const { module } = loadCopilotCommandsModule({ cliCommand: "copilot" });
+		const command = module.buildCopilotPromptCommand('Say \\"hello\\"');
+		assert.strictEqual(command, 'copilot -p "Say \\\\\\"hello\\\\\\""');
+	});
+
 	it("executes explain command using copilot prompt mode", async () => {
 		const { module } = loadCopilotCommandsModule({ cliCommand: "copilot" });
 		const explainCommand = module.copilotCommands.find((cmd: any) => cmd.id === "copilot-explain");

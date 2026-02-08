@@ -16,8 +16,9 @@ import { getNotificationService } from "@ui/notificationService";
 export function buildCopilotPromptCommand(prompt: string): string {
 	const cli = getCopilotCliCommand();
 	// Use -p flag for one-shot prompts
-	// The prompt is passed as-is; terminal will handle escaping based on active shell
-	return `${cli} -p "${prompt.replace(/"/g, '\\"')}"`;
+	// Escape backslashes first, then double quotes to prevent injection
+	const escaped = prompt.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+	return `${cli} -p "${escaped}"`;
 }
 
 /**
