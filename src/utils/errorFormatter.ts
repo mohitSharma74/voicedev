@@ -222,13 +222,13 @@ export class ErrorFormatter {
 		// Not installed
 		if (errorMessage.includes("not found") || errorMessage.includes("not installed")) {
 			return {
-				message: "GitHub Copilot CLI is not installed",
+				message: "Copilot CLI is not installed",
 				actions: [
 					{
 						title: "Install Guide",
 						action: () => {
 							void vscode.env.openExternal(
-								vscode.Uri.parse("https://docs.github.com/en/copilot/github-copilot-in-the-cli"),
+								vscode.Uri.parse("https://docs.github.com/en/copilot/reference/cli-command-reference"),
 							);
 						},
 					},
@@ -239,14 +239,14 @@ export class ErrorFormatter {
 		// Not authenticated
 		if (errorMessage.includes("auth") || errorMessage.includes("login") || errorMessage.includes("unauthorized")) {
 			return {
-				message: "GitHub CLI authentication required",
+				message: "Copilot CLI authentication required",
 				actions: [
 					{
-						title: "Login",
+						title: "Authentication Guide",
 						action: () => {
-							const terminal = vscode.window.createTerminal("GitHub Login");
-							terminal.show();
-							terminal.sendText("gh auth login", true);
+							void vscode.env.openExternal(
+								vscode.Uri.parse("https://docs.github.com/en/copilot/reference/cli-command-reference"),
+							);
 						},
 					},
 				],

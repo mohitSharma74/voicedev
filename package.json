@@ -118,7 +118,7 @@
 				"voicedev.copilot.cliPath": {
 					"type": "string",
 					"default": "",
-					"description": "Optional absolute path to the GitHub CLI (gh) executable used for Copilot commands"
+					"description": "Optional absolute path to the Copilot CLI (copilot) executable used for Copilot commands"
 				},
 				"voicedev.commands.disabled": {
 					"type": "array",

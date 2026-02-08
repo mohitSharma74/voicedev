@@ -9,10 +9,19 @@ import { requireCopilot, getCopilotCliCommand } from "@services/copilotDetection
 import { getNotificationService } from "@ui/notificationService";
 
 /**
- * Escape quotes in a string for safe shell usage
+ * Shell-quote a value for safe command usage.
  */
-function escapeQuotes(str: string): string {
-	return str.replace(/"/g, '\\"');
+function shellQuote(value: string): string {
+	return `'${value.replace(/'/g, `'\\''`)}'`;
+}
+
+/**
+ * Build a one-shot Copilot prompt command with interactive fallback.
+ */
+export function buildCopilotPromptCommand(prompt: string): string {
+	const cli = getCopilotCliCommand();
+	const quotedPrompt = shellQuote(prompt);
+	return `${cli} -p ${quotedPrompt} || ${cli} -i ${quotedPrompt}`;
 }
 
 /**
@@ -22,56 +31,107 @@ function showWarning(message: string): void {
 	void getNotificationService().showWarning(message);
 }
 
+const CHAT_DIRECT_PROMPT_COMMANDS = ["workbench.action.chat.open", "workbench.action.openChat.open"];
+const CHAT_OPEN_COMMANDS = [
+	"workbench.action.chat.open",
+	"workbench.action.openChat.open",
+	"workbench.panel.chat.view.copilot.focus",
+	"workbench.panel.chat.view.edits.focus",
+	"github.copilot.chat.open",
+];
+const CHAT_PASTE_COMMANDS = [
+	"editor.action.clipboardPasteAction",
+	"editor.action.clipboardPasteActionWithoutFormatting",
+];
+const CHAT_SUBMIT_COMMANDS = ["workbench.action.chat.submit", "workbench.action.chat.send"];
+
+async function getAvailableCommands(): Promise<Set<string>> {
+	try {
+		const commands = await vscode.commands.getCommands(true);
+		return new Set(commands);
+	} catch {
+		return new Set();
+	}
+}
+
+async function executeFirstAvailableCommand(
+	available: Set<string>,
+	commandIds: string[],
+	args: unknown[] = [],
+): Promise<boolean> {
+	const shouldFilter = available.size > 0;
+	for (const commandId of commandIds) {
+		if (shouldFilter && !available.has(commandId)) {
+			continue;
+		}
+		try {
+			await vscode.commands.executeCommand(commandId, ...args);
+			return true;
+		} catch {
+			// Try next command ID.
+		}
+	}
+	return false;
+}
+
 /**
  * Open GitHub Copilot Chat and send a message
- * Uses VS Code's command palette to interact with Copilot Chat
+ * Uses command discovery and fallback IDs to stay compatible across VS Code versions.
  */
 async function openCopilotChat(message: string): Promise<void> {
+	const availableCommands = await getAvailableCommands();
+
+	const promptVariants: unknown[][] = [
+		[message],
+		[{ query: message }],
+		[{ prompt: message }],
+		[{ initialQuery: message }],
+		[{ message }],
+	];
+
 	try {
-		// Try to open the Copilot Chat view using the workbench chat command
-		// This command opens the chat view and focuses the input
-		await vscode.commands.executeCommand("workbench.action.openChat.open");
-
-		// Wait a bit for the chat view to open
-		await new Promise((resolve) => setTimeout(resolve, 500));
-
-		// Copy the message to clipboard
-		await vscode.env.clipboard.writeText(message);
-
-		// Paste the message into the chat input
-		await vscode.commands.executeCommand("editor.action.clipboardPasteAction");
-
-		// Press Enter to send
-		await vscode.commands.executeCommand("workbench.action.chat.submit");
-	} catch {
-		// Fallback: try alternative command IDs
-		try {
-			// Try the GitHub Copilot specific command
-			await vscode.commands.executeCommand("github.copilot.chat.open");
-			await new Promise((resolve) => setTimeout(resolve, 500));
-			await vscode.env.clipboard.writeText(message);
-			await vscode.commands.executeCommand("editor.action.clipboardPasteAction");
-		} catch {
-			// If all else fails, show an error with instructions
-			await getNotificationService().showError(
-				"Could not open Copilot Chat automatically. Please open it manually and paste your question.",
-				[
-					{
-						title: "Open Copilot Chat",
-						action: () => vscode.commands.executeCommand("workbench.panel.chat.view.copilot.focus"),
-					},
-					{
-						title: "Copy to Clipboard",
-						action: async () => {
-							await vscode.env.clipboard.writeText(message);
-							await getNotificationService().showInfo(
-								"Question copied to clipboard. Paste it into Copilot Chat.",
-							);
-						},
-					},
-				],
+		for (const args of promptVariants) {
+			const sentWithPromptArgs = await executeFirstAvailableCommand(
+				availableCommands,
+				CHAT_DIRECT_PROMPT_COMMANDS,
+				args,
 			);
+			if (sentWithPromptArgs) {
+				return;
+			}
 		}
+	} catch {
+		// Continue to open/paste fallback flow.
+	}
+
+	const opened = await executeFirstAvailableCommand(availableCommands, CHAT_OPEN_COMMANDS);
+	if (!opened) {
+		await getNotificationService().showError(
+			"Could not open Copilot Chat automatically. Please open it manually and paste your question.",
+			[
+				{
+					title: "Copy to Clipboard",
+					action: async () => {
+						await vscode.env.clipboard.writeText(message);
+					},
+				},
+			],
+		);
+		return;
+	}
+
+	await new Promise((resolve) => setTimeout(resolve, 350));
+	await vscode.env.clipboard.writeText(message);
+
+	const pasted = await executeFirstAvailableCommand(availableCommands, CHAT_PASTE_COMMANDS);
+	if (!pasted) {
+		await getNotificationService().showInfo("Copilot Chat opened. Prompt copied to clipboard, please paste it.");
+		return;
+	}
+
+	const submitted = await executeFirstAvailableCommand(availableCommands, CHAT_SUBMIT_COMMANDS);
+	if (!submitted) {
+		await getNotificationService().showInfo("Copilot Chat opened. Prompt pasted in chat input.");
 	}
 }
 
@@ -96,7 +156,7 @@ export const copilotCommands: VoiceCommand[] = [
 				return;
 			}
 
-			ctx?.terminal.run(`${getCopilotCliCommand()} copilot explain "${escapeQuotes(query)}"`);
+			ctx?.terminal.run(buildCopilotPromptCommand(`Explain: ${query}`));
 		},
 	},
 
@@ -116,7 +176,7 @@ export const copilotCommands: VoiceCommand[] = [
 				return;
 			}
 
-			ctx?.terminal.run(`${getCopilotCliCommand()} copilot explain "Explain the code in ${filePath}"`);
+			ctx?.terminal.run(buildCopilotPromptCommand(`Explain the code in file: ${filePath}`));
 		},
 	},
 
@@ -132,7 +192,9 @@ export const copilotCommands: VoiceCommand[] = [
 			}
 
 			ctx?.terminal.run(
-				`${getCopilotCliCommand()} copilot suggest "Write a git commit message for the current changes"`,
+				buildCopilotPromptCommand(
+					"Write one conventional commit message for the current staged and unstaged git changes.",
+				),
 			);
 		},
 	},
@@ -154,7 +216,7 @@ export const copilotCommands: VoiceCommand[] = [
 				return;
 			}
 
-			ctx?.terminal.run(`${getCopilotCliCommand()} copilot suggest "${escapeQuotes(query)}"`);
+			ctx?.terminal.run(buildCopilotPromptCommand(`Suggest shell commands for: ${query}`));
 		},
 	},
 ];
@@ -237,14 +299,12 @@ export const copilotChatCommands: VoiceCommand[] = [
 		category: "terminal",
 		requiresCopilot: false,
 		execute: async () => {
-			try {
-				await vscode.commands.executeCommand("workbench.action.openChat.open");
-			} catch {
-				try {
-					await vscode.commands.executeCommand("github.copilot.chat.open");
-				} catch {
-					await vscode.commands.executeCommand("workbench.panel.chat.view.copilot.focus");
-				}
+			const availableCommands = await getAvailableCommands();
+			const opened = await executeFirstAvailableCommand(availableCommands, CHAT_OPEN_COMMANDS);
+			if (!opened) {
+				await getNotificationService().showWarning(
+					"Could not find a Copilot Chat command in this VS Code build.",
+				);
 			}
 		},
 	},
