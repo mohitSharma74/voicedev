@@ -146,7 +146,7 @@ export class StatusBarManager {
 	private buildTooltip(): vscode.MarkdownString {
 		const tooltip = new vscode.MarkdownString(
 			`**VoiceDev (Preview)** - ${this.getProviderDisplayName()}\n\n` +
-				"⚠️ **Public Preview** - Rapid iteration, features stable\n\n" +
+				"⚠️ **Public Preview** - Rapid iteration, features may change\n\n" +
 				"**Keyboard Shortcuts:**\n" +
 				"- `Ctrl+Shift+V` (Cmd+Shift+V on Mac) - Toggle recording\n" +
 				"- `Ctrl+Shift+L` - List voice commands\n\n" +

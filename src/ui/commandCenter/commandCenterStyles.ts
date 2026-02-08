@@ -244,23 +244,6 @@ export function getCommandCenterStyles(): string {
             text-align: right;
         }
 
-        /* Footer */
-        .footer {
-            margin-top: 40px;
-            padding-top: 24px;
-            border-top: 1px solid var(--vscode-panel-border);
-        }
-
-        .footer-tip {
-            text-align: center;
-            margin-top: 16px;
-        }
-
-        .footer-tip p {
-            color: var(--vscode-descriptionForeground);
-            font-size: 12px;
-        }
-
         /* Preview Notice */
         .preview-notice {
             background-color: var(--vscode-textBlockQuote-background);
@@ -298,6 +281,16 @@ export function getCommandCenterStyles(): string {
             text-decoration: underline;
         }
 
+        .footer-tip {
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .footer-tip p {
+            color: var(--vscode-descriptionForeground);
+            font-size: 12px;
+        }
+
         .category-tag {
             display: inline-flex;
             align-items: center;
@@ -333,19 +326,9 @@ export function getCommandCenterStyles(): string {
 
         /* Footer */
         .footer {
-            margin-top: 32px;
-            padding-top: 16px;
+            margin-top: 40px;
+            padding-top: 24px;
             border-top: 1px solid var(--vscode-panel-border);
-            text-align: center;
-        }
-
-        .footer p {
-            color: var(--vscode-descriptionForeground);
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
         }
 
         /* Empty State */

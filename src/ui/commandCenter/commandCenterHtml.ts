@@ -26,6 +26,7 @@ export function getCommandCenterHtml(
 	webview: vscode.Webview,
 	extensionUri: vscode.Uri,
 	commands: CommandDisplayData[],
+	extensionVersion?: string,
 ): string {
 	const nonce = getNonce();
 	const commandsByCategory = groupByCategory(commands);
@@ -78,7 +79,7 @@ export function getCommandCenterHtml(
 
         <footer class="footer">
             <div class="preview-notice">
-                <span class="preview-badge">⚡ Preview v0.1.0</span>
+                <span class="preview-badge">⚡ Preview${extensionVersion ? ` ${extensionVersion}` : ""}</span>
                 <p>This extension is in active development. <a href="https://github.com/mohitSharma74/voicedev/issues/new/choose">Share feedback</a> to help shape VoiceDev!</p>
             </div>
             <div class="footer-tip">
