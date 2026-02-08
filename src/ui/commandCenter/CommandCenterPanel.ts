@@ -86,7 +86,9 @@ export class CommandCenterPanel {
 	 */
 	private _update(): void {
 		const commands = this._getCommandData();
-		this._panel.webview.html = getCommandCenterHtml(this._panel.webview, this._extensionUri, commands);
+		const extension = vscode.extensions.getExtension("mohitSharma74.voicedev");
+		const version = extension?.packageJSON ? (extension.packageJSON as { version?: string }).version : undefined;
+		this._panel.webview.html = getCommandCenterHtml(this._panel.webview, this._extensionUri, commands, version);
 	}
 
 	public refresh(): void {
