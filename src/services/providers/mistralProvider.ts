@@ -1,9 +1,10 @@
 import { Mistral } from "@mistralai/mistralai";
+import type { TranscriptionResponse } from "@mistralai/mistralai/models/components";
 import { ITranscriptionProvider } from "@services/providers/ITranscriptionProvider";
 import { SecretStorageHelper } from "@utils/secretStorage";
 
 export class MistralProvider implements ITranscriptionProvider {
-	private client: Mistral | null = null;
+	private client: Mistral | undefined;
 	private readonly providerId = "mistral";
 
 	async transcribe(audioBuffer: Buffer): Promise<string> {
@@ -20,7 +21,7 @@ export class MistralProvider implements ITranscriptionProvider {
 
 			try {
 				// Use Node-compatible Buffer upload for the Mistral SDK
-				const transcription = await this.client.audio.transcriptions.complete({
+				const transcription: TranscriptionResponse = await this.client.audio.transcriptions.complete({
 					model: "voxtral-mini-latest",
 					file: {
 						fileName: "audio.wav",
@@ -72,6 +73,6 @@ export class MistralProvider implements ITranscriptionProvider {
 	}
 
 	dispose(): void {
-		this.client = null;
+		this.client = undefined;
 	}
 }

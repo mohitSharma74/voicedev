@@ -1,5 +1,3 @@
-![Voice-powered commands for VS Code](https://raw.githubusercontent.com/mohitSharma74/voicedev/main/media/assets/logo-128x128.png)
-
 # Changelog
 
 All notable changes to the VoiceDev extension will be documented in this file.
@@ -11,20 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Audio feedback (start/stop chimes) for recording actions
-- Initial extension scaffold
-- Hello World command for testing
-- TypeScript configuration
-- Development environment setup
-- ESLint configuration
-- Basic README documentation
+- No notable changes yet.
 
-## [0.1.0] - Coming Soon
+## [0.1.0-preview] - 2026-02-08
 
-### Planned
+### Added
 
-- Voice-activated commands (10-15 commands)
-- Voice-to-Git commits with Conventional Commits format
-- Quick voice dictation with hotkey activation
-- Status bar integration with recording feedback
-- Multi-provider support (Groq, OpenAI, OpenRouter)
+- Initial VoiceDev extension scaffold with startup activation and core command wiring
+- Voice recording with WAV export support, status bar control, and start/stop feedback sounds
+- STT provider support for Groq, OpenAI, Mistral Voxtral, and local faster-whisper
+- Command system with fuzzy matching and a searchable Command Center
+- Voice-assisted Git and Copilot command integrations
+- Transcript insertion into editors and terminals
+- Provider status indicators and configurable command disabling
+- VSIX packaging and install scripts for preview builds
+- Contributor-facing docs and templates, including contribution guide and issue templates
+
+### Changed
+
+- Recording UX and status bar behavior were refined for clearer state transitions
+- Build pipeline migrated from TypeScript compile flow to esbuild bundling
+- Preview mode visual feedback was improved
+
+### Fixed
+
+- Race condition between audio frame capture and stop-recording flow
+- Build and lint issues in the esbuild and Mistral provider paths
+- Documentation asset paths for VSIX packaging compatibility
