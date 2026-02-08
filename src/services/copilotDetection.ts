@@ -29,11 +29,19 @@ function formatCliCommand(cliPath: string): string {
 	return cliPath;
 }
 
+function stripQuotes(path: string): string {
+	if ((path.startsWith('"') && path.endsWith('"')) || (path.startsWith("'") && path.endsWith("'"))) {
+		return path.slice(1, -1);
+	}
+	return path;
+}
+
 async function isValidCliPath(cliPath: string): Promise<boolean> {
 	try {
+		const unquotedPath = stripQuotes(cliPath);
 		const accessMode = process.platform === "win32" ? fsConstants.F_OK : fsConstants.X_OK;
-		await fs.access(cliPath, accessMode);
-		const stats = await fs.stat(cliPath);
+		await fs.access(unquotedPath, accessMode);
+		const stats = await fs.stat(unquotedPath);
 		return stats.isFile();
 	} catch {
 		return false;
@@ -61,7 +69,7 @@ export interface CopilotStatus {
 let copilotStatusCache: CopilotStatus | null = null;
 
 /**
- * Check if GitHub Copilot CLI is installed and available
+ * Check if Copilot CLI is installed and available
  * Runs `copilot --version` to verify
  */
 export async function checkCopilotAvailability(): Promise<CopilotStatus> {
@@ -89,9 +97,11 @@ export async function checkCopilotAvailability(): Promise<CopilotStatus> {
 			}
 		}
 
-		// Check if Copilot CLI is installed
+		// Check if Copilot CLI is installed and get version
+		let stdout: string;
 		try {
-			await execAsync(`${cliCommand} --version`);
+			const result = await execAsync(`${cliCommand} --version`);
+			stdout = result.stdout;
 		} catch {
 			const status: CopilotStatus = {
 				available: false,
@@ -103,7 +113,6 @@ export async function checkCopilotAvailability(): Promise<CopilotStatus> {
 			return status;
 		}
 
-		const { stdout } = await execAsync(`${cliCommand} --version`);
 		const version = stdout.trim();
 
 		const status: CopilotStatus = {
@@ -179,9 +188,9 @@ export async function initCopilotDetection(): Promise<void> {
 	const status = await checkCopilotAvailability();
 
 	if (status.available) {
-		console.log(`VoiceDev: GitHub Copilot CLI detected (${status.version})`);
+		console.log(`VoiceDev: Copilot CLI detected (${status.version})`);
 	} else {
-		console.log(`VoiceDev: GitHub Copilot CLI not available - ${status.error}`);
+		console.log(`VoiceDev: Copilot CLI not available - ${status.error}`);
 	}
 }
 

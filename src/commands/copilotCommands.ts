@@ -9,19 +9,15 @@ import { requireCopilot, getCopilotCliCommand } from "@services/copilotDetection
 import { getNotificationService } from "@ui/notificationService";
 
 /**
- * Shell-quote a value for safe command usage.
- */
-function shellQuote(value: string): string {
-	return `'${value.replace(/'/g, `'\\''`)}'`;
-}
-
-/**
- * Build a one-shot Copilot prompt command with interactive fallback.
+ * Build a Copilot CLI prompt command.
+ * For terminal execution, we avoid shell-specific quoting/fallback logic
+ * and rely on the terminal's native handling.
  */
 export function buildCopilotPromptCommand(prompt: string): string {
 	const cli = getCopilotCliCommand();
-	const quotedPrompt = shellQuote(prompt);
-	return `${cli} -p ${quotedPrompt} || ${cli} -i ${quotedPrompt}`;
+	// Use -p flag for one-shot prompts
+	// The prompt is passed as-is; terminal will handle escaping based on active shell
+	return `${cli} -p "${prompt.replace(/"/g, '\\"')}"`;
 }
 
 /**
