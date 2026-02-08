@@ -11,6 +11,12 @@
 
 > ⚠️ **v0.1.0-preview** — Early development. Expect rapid improvements.
 
+## 🎥 See It In Action
+
+[![VoiceDev Demo](https://img.youtube.com/vi/65OpDcS4oHM/maxresdefault.jpg)](https://youtu.be/65OpDcS4oHM)
+
+Watch VoiceDev in action — see voice-driven git workflows, navigation, and AI-assisted development.
+
 ## Why VoiceDev?
 
 Development is full of small, repetitive actions — saving files, committing code, navigating to a line, running a command. These tiny interruptions pull you out of flow.
