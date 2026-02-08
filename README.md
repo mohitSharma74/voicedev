@@ -5,43 +5,91 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3.3-blue.svg)](https://www.typescriptlang.org/)
 [![VS Code](https://img.shields.io/badge/VS%20Code-1.85.0+-blue.svg)](https://code.visualstudio.com/)
 
-# VoiceDev - Voice Control for VS Code
+# VoiceDev — Voice-Native Development
 
-**Voice-activated commands for VS Code** - speak to code, commit, and control your editor.
+**Voice-native development for VS Code** — speak to navigate, commit, and control your workflow.
 
-> ⚠️ **v0.1.0-preview** - This extension is in early development.
+> ⚠️ **v0.1.0-preview** — Early development. Expect rapid improvements.
 
 ## Why VoiceDev?
 
-### Comparison with VS Code's Built-in Speech Extension
+Development is full of small, repetitive actions — saving files, committing code, navigating to a line, running a command. These tiny interruptions pull you out of flow.
 
-| Feature                | VoiceDev                            | VS Code Speech Extension        |
-| ---------------------- | ----------------------------------- | ------------------------------- |
-| **Voice Commands**     | ✅ Full VS Code command execution   | ❌ Limited to basic navigation  |
-| **Voice Dictation**    | ✅ Text insertion at cursor         | ✅ Text insertion at cursor     |
-| **Git Integration**    | ✅ Voice-to-commit messages         | ❌ No Git integration           |
-| **Privacy Options**    | ✅ Cloud + Local offline mode       | ❌ Cloud-only                   |
-| **Provider Choice**    | ✅ Groq, OpenAI, Local              | ❌ Single cloud provider        |
-| **Setup Complexity**   | ⚠️ Local requires Python/ffmpeg     | ✅ Simple setup                 |
-| **Performance**        | ⚡ Fast (cloud) / 🐌 Slower (local) | ✅ Consistent cloud performance |
-| **Cost**               | 🆓 Free tier + 💰 Paid options      | 🆓 Free (cloud-based)           |
-| **Offline Capability** | ✅ Full offline mode available      | ❌ Requires internet            |
+VoiceDev makes voice a **first-class way** to drive your development workflows. Not just dictation — real workflows, entirely by voice:
 
-**Choose VoiceDev if you need:** Advanced voice commands, Git integration, privacy-focused offline mode, or multiple provider options.
+```
+🗣️ "git status"  →  "git commit message fixed the auth bug"  →  "git push"
+```
 
-**Choose VS Code Speech if you want:** Simple voice dictation with minimal setup and consistent cloud performance.
+A full commit cycle without touching a menu, a palette, or a terminal prompt.
+
+```
+🗣️ "open file server.ts"  →  "go to line 42"  →  "format document"  →  "save all"
+```
+
+Navigate, edit, and save — all spoken.
+
+```
+🗣️ "ask copilot explain this file"  →  "copilot commit"
+```
+
+AI-assisted development, triggered by voice.
+
+### Core Beliefs
+
+- **Workflows over keystrokes** — voice shines at chaining intent, not replacing a keyboard
+- **Privacy as a feature** — cloud speed or local privacy, always your choice
+- **Accessible by nature** — every speakable workflow is one less barrier
+- **Progressive disclosure** — simple on day one, powerful by day thirty
+
+> 📖 Read the full philosophy in [VISION.md](VISION.md)
 
 ## Features
 
-VoiceDev brings voice control to your development workflow:
+### 🗣️ 30+ Voice Commands
 
-- 🗣️ **Voice Commands** - Execute VS Code actions by speaking
-- 📝 **Voice Dictation** - Insert text at cursor via voice
-- 🔧 **Git Integration** - Generate commit messages from voice descriptions
+Speak naturally — VoiceDev understands you even if your wording isn't exact, thanks to fuzzy matching with confidence scoring.
 
-### ✨ NEW: Privacy-First Offline Mode Available!
+**Editor**
 
-Choose your speech-to-text provider:
+- _"save all"_ · _"format document"_ · _"new terminal"_ · _"close editor"_
+
+**Git — full workflow by voice**
+
+- _"git status"_ · _"git add all"_ · _"git diff"_ · _"git log"_
+- _"git commit message fixed the login bug"_ — wildcard captures your message
+- _"git pull"_ · _"git push"_ (with confirmation) · force push blocked for safety
+
+**Navigation**
+
+- _"open file server.ts"_ — fuzzy file search
+- _"go to line 42"_ · _"go to top"_ · _"go to bottom"_ · _"go to symbol"_
+
+**Copilot CLI**
+
+- _"ask copilot explain this error"_ · _"copilot commit"_ · _"copilot suggest how to list docker containers"_
+
+**Copilot Chat**
+
+- _"copilot chat explain this file"_ · _"ask copilot in chat how to fix this"_ · _"open copilot chat"_
+
+**System**
+
+- _"help"_ · _"open command center"_ · _"show shortcuts"_
+
+### 🎯 Smart Matching
+
+- **Wildcard patterns** — say _"git commit message fixed the auth bug"_ and VoiceDev extracts _"fixed the auth bug"_ as the commit message. 9 commands support dynamic argument capture.
+- **Fuzzy matching** — _"format the document"_ still triggers `format-document`. No need to memorize exact phrases.
+- **Confidence scoring** — if VoiceDev isn't confident enough in a command match, it falls back to dictation instead of guessing wrong.
+
+### 📝 Voice Dictation
+
+When your speech doesn't match a command, VoiceDev inserts it as text — into the active editor at your cursor, or into the terminal if one is focused.
+
+### 🔒 Privacy-First Provider Choice
+
+Your voice, your rules. Choose between fast cloud transcription or fully offline local mode:
 
 | Provider              | Speed        | Cost         | Privacy          | Setup                   |
 | --------------------- | ------------ | ------------ | ---------------- | ----------------------- |
@@ -50,33 +98,44 @@ Choose your speech-to-text provider:
 | **Local**             | 🐌 Slower    | 🆓 Zero cost | 🔒 Fully offline | One-time setup (~2 min) |
 | **OpenAI**            | 🐢 Medium    | 💰 Paid      | ☁️ Cloud         | API key only            |
 
-**Privacy-first option**: Local provider keeps your voice on your machine - no data sent to cloud.
+Local mode runs via faster-whisper — your voice never leaves your machine. No API keys, no cloud, no limits.
 
-## Upcoming Features
+### 🔊 Audio & Visual Feedback
 
-Here is what we are building next for VoiceDev:
+- Start/stop chimes so you know when VoiceDev is listening
+- Status bar shows recording timer, transcription spinner, and provider name
+- Toast notifications for command execution, errors, and results
+- Command Center webview for browsing all available commands
 
-- **Now (v0.1.0-preview)**:
-    - ✅ Core voice commands and git integration
-    - ✅ Multi-provider support (Groq, Mistral, OpenAI, Local)
-    - ✅ Privacy-first offline mode with faster-whisper
-    - ✅ Mistral Voxtral integration for fast cloud transcription
-- **Next**:
-    - Real-time translation from multiple languages into English
-    - AI-powered developer workflows (for example: inline completion, coding assists, etc)
-    - Voice-based web search with responses in both text and spoken output inside the IDE
-    - More VS Code-native actions by voice (search extensions, update settings, open projects, and more)
-    - Custom voice commands and reusable snippets
-- **Towards v1.0.0 and beyond**:
-    - Production release with full cross-platform support
-    - Expansion to additional marketplaces and IDE ecosystems (Open VSX, Zed, and more)
+## Roadmap
 
-### Coming in v0.1.0
+VoiceDev is in active development. Here's where we are and where we're heading.
 
-- Voice-activated commands (save, format, console.log, etc.)
-- Voice-to-Git commits with Conventional Commits format
-- Quick voice dictation with hotkey activation
-- Status bar integration with recording feedback
+### 🟢 Now (v0.1.0-preview)
+
+- ✅ 30+ voice commands — editor, git, navigation, Copilot CLI, and Copilot Chat
+- ✅ Multi-provider speech-to-text (Groq, Mistral Voxtral, OpenAI, Local)
+- ✅ Privacy-first offline mode via faster-whisper
+- ✅ Fuzzy matching and wildcard pattern extraction
+- ✅ Audio feedback and status bar integration
+
+### 🔵 Next
+
+- Workflow chaining — compose multi-step voice sequences (diff + stage + commit + push)
+- Custom voice commands and reusable snippets
+- AI-powered developer workflows (inline completion, coding assists)
+- Real-time translation from multiple languages into English
+- More VS Code-native actions by voice (search extensions, update settings, open projects)
+
+### 🟣 Exploring
+
+- Voice-based web search with responses inside the IDE
+- Multi-IDE expansion (Open VSX, Zed, and beyond)
+- Conversational mode — multi-turn voice interactions
+- Developer dictionary — learn your codebase vocabulary
+- Full cross-platform production release
+
+> 📖 See [VISION.md](VISION.md) for the full philosophy and detailed roadmap
 
 ## Requirements
 
@@ -291,4 +350,4 @@ BSD 3-Clause License - See [LICENSE](LICENSE) file for details.
 
 ---
 
-**Built for the GitHub Copilot CLI Challenge** 🚀
+**Voice-native development** — read the [vision](VISION.md) 🎙️

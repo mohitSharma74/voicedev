@@ -1,12 +1,21 @@
-# VoiceDev - AI Agent Development Guide
+# VoiceDev — AI Agent Development Guide
 
 ## Project Overview
 
-**VoiceDev** is a VS Code extension for voice-activated development workflows. It enables voice control for commands, git operations, and GitHub Copilot CLI integration.
+**VoiceDev** is a VS Code extension for **voice-native development** — voice as a first-class way to drive development workflows, not just dictation.
 
-**Status**: v0.1.0-preview (GitHub Copilot CLI Challenge submission)
+**Status**: v0.1.0-preview
 
-**Competition Focus**: Voice-controlled GitHub Copilot CLI commands are the headline feature.
+**Philosophy**: See [VISION.md](../VISION.md) for the full mission, principles, and roadmap.
+
+**Core Principles**:
+
+1. **Workflows over keystrokes** — voice shines at chaining intent (save → commit → push), not replacing a keyboard
+2. **Privacy as a feature** — cloud speed or local privacy, always the user's choice
+3. **Accessible by nature** — every speakable workflow is one less barrier
+4. **Progressive disclosure** — simple on day one, powerful by day thirty
+
+**Anti-goals**: VoiceDev is not a code generator, not a keyboard replacement, and not a closed ecosystem.
 
 ## Current Implementation
 
@@ -151,21 +160,14 @@ await storage.storeApiKey("groq", apiKey);
 const key = await storage.getApiKey("groq");
 ```
 
-## Competition Context
+## Example Voice Workflow
 
-**GitHub Copilot CLI Challenge**: VoiceDev's headline feature is voice-controlled Copilot CLI commands:
+A typical voice-driven development flow:
 
-- "Ask copilot explain this error"
-- "Ask copilot write commit message"
-- "Ask copilot explain file"
-
-**Demo Workflow**:
-
-1. Introduce a bug → 2. "Save all" → 3. "Git status" → 4. "Ask copilot explain this error" → 5. Apply fix → 6. "Ask copilot write commit message" → 7. "Git push"
+1. "Save all" → 2. "Git status" → 3. "Ask copilot explain this error" → 4. Apply fix → 5. "Ask copilot write commit message" → 6. "Git push"
 
 ## Key References
 
 - Entry point: [src/extension.ts](../src/extension.ts)
 - Manifest: [package.json](../package.json)
-- Roadmap: [project-plan.md](../project-plan.md)
-- Submission plan: See `voice_dev_v_1_submission_plan.md`
+- Vision & Roadmap: [VISION.md](../VISION.md)

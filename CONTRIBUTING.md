@@ -2,6 +2,17 @@
 
 🎉 Thank you for your interest in contributing to VoiceDev! We welcome contributions from developers of all skill levels, as well as feedback and bug reports from non-technical users.
 
+## Philosophy
+
+VoiceDev is built on the idea of **voice-native development** — voice as a first-class way to drive development workflows. Before contributing, please read [VISION.md](VISION.md) to understand the principles that guide every decision:
+
+1. **Workflows over keystrokes** — prioritize multi-step workflows over isolated commands
+2. **Privacy as a feature** — never make cloud the only option
+3. **Accessible by nature** — every speakable workflow reduces barriers
+4. **Progressive disclosure** — simple things simple, powerful things possible
+
+Every PR should align with at least one of these principles.
+
 ## Ways to Contribute
 
 ### For Non-Technical Users

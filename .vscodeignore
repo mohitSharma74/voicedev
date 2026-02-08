@@ -8,8 +8,6 @@ node_modules
 *.vsix
 *.log
 test/
-project-plan.md
-project-qa-plan.md
 plans/
 stt/
 .DS_Store
