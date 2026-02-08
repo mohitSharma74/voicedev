@@ -34,23 +34,20 @@ export function getCommandCenterHtml(
 
 	// Get webview URIs for logo images
 	const logoUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "media", "assets", "logo-128x128.png"));
-	const logoTransparentUri = webview.asWebviewUri(
-		vscode.Uri.joinPath(extensionUri, "media", "assets", "logo-transparent.png"),
-	);
 
 	return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} data:; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
     <title>VoiceDev Command Center</title>
     <style>${getCommandCenterStyles()}</style>
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <img class="header-logo" src="${logoUri.toString()}" alt="Voice-powered commands for VS Code" onerror="this.src='${logoTransparentUri.toString()}'" />
+            <img class="header-logo" src="${logoUri.toString()}" alt="Voice-powered commands for VS Code" />
             <h1>VoiceDev Command Center</h1>
             <p class="subtitle">All available voice commands for hands-free coding</p>
         </header>
