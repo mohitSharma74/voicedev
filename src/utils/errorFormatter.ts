@@ -228,7 +228,9 @@ export class ErrorFormatter {
 						title: "Install Guide",
 						action: () => {
 							void vscode.env.openExternal(
-								vscode.Uri.parse("https://docs.github.com/en/copilot/reference/cli-command-reference"),
+								vscode.Uri.parse(
+									"https://docs.github.com/en/copilot/using-github-copilot/using-github-copilot-in-the-command-line",
+								),
 							);
 						},
 					},
@@ -245,7 +247,9 @@ export class ErrorFormatter {
 						title: "Authentication Guide",
 						action: () => {
 							void vscode.env.openExternal(
-								vscode.Uri.parse("https://docs.github.com/en/copilot/reference/cli-command-reference"),
+								vscode.Uri.parse(
+									"https://docs.github.com/en/copilot/github-copilot-in-the-cli/authenticating-to-github-copilot-in-the-cli",
+								),
 							);
 						},
 					},

@@ -60,10 +60,28 @@ describe("Copilot Commands", () => {
 		};
 	}
 
-	it("builds one-shot command with interactive fallback", () => {
+	it("builds one-shot command with double-quote escaping", () => {
 		const { module } = loadCopilotCommandsModule({ cliCommand: "copilot" });
 		const command = module.buildCopilotPromptCommand("Explain: why tests fail");
-		assert.strictEqual(command, "copilot -p 'Explain: why tests fail' || copilot -i 'Explain: why tests fail'");
+		assert.strictEqual(command, 'copilot -p "Explain: why tests fail"');
+	});
+
+	it("escapes double quotes in prompt", () => {
+		const { module } = loadCopilotCommandsModule({ cliCommand: "copilot" });
+		const command = module.buildCopilotPromptCommand('Say "hello world"');
+		assert.strictEqual(command, 'copilot -p "Say \\"hello world\\""');
+	});
+
+	it("escapes backslashes in prompt", () => {
+		const { module } = loadCopilotCommandsModule({ cliCommand: "copilot" });
+		const command = module.buildCopilotPromptCommand("Path: C:\\Users\\test");
+		assert.strictEqual(command, 'copilot -p "Path: C:\\\\Users\\\\test"');
+	});
+
+	it("escapes backslashes before quotes", () => {
+		const { module } = loadCopilotCommandsModule({ cliCommand: "copilot" });
+		const command = module.buildCopilotPromptCommand('Say \\"hello\\"');
+		assert.strictEqual(command, 'copilot -p "Say \\\\\\"hello\\\\\\""');
 	});
 
 	it("executes explain command using copilot prompt mode", async () => {
@@ -78,10 +96,7 @@ describe("Copilot Commands", () => {
 		});
 
 		assert.strictEqual(run.calledOnce, true);
-		assert.strictEqual(
-			run.firstCall.args[0],
-			"copilot -p 'Explain: why tests fail' || copilot -i 'Explain: why tests fail'",
-		);
+		assert.strictEqual(run.firstCall.args[0], 'copilot -p "Explain: why tests fail"');
 	});
 
 	it("opens chat using first available command id", async () => {
