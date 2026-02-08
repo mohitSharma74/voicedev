@@ -11,7 +11,7 @@ import { audioPlayer } from "@utils/audioPlayer";
 import { TranscriptionService } from "@services/transcriptionService";
 import { SecretStorageHelper } from "@utils/secretStorage";
 import { insertOrSendText } from "@utils/textInsertion";
-import { registerAllCommands, getCommandRegistry } from "@commands/index";
+import { registerAllCommands } from "@commands/index";
 import { initCommandParser } from "@services/commandParser";
 import { getCommandExecutor } from "@services/commandExecutor";
 import { initCopilotDetection, clearCopilotCache } from "@services/copilotDetection";
@@ -375,15 +375,9 @@ export function activate(context: vscode.ExtensionContext) {
 		statusBar.setSuccess("API key cleared");
 	});
 
-	// List Voice Commands - opens quick pick with all available commands
+	// List Voice Commands - opens Command Center with all available commands
 	const listCommandsCmd = vscode.commands.registerCommand("voicedev.listCommands", async () => {
-		const registry = getCommandRegistry();
-		const listCommand = registry.findById("list-commands");
-		if (listCommand) {
-			await listCommand.execute();
-		} else {
-			void notifications.showWarning("Voice commands not loaded yet. Please try again.");
-		}
+		await vscode.commands.executeCommand("voicedev.openCommandCenter");
 	});
 
 	// Open Command Center - opens webview with all commands
