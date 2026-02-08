@@ -52,6 +52,25 @@ Choose your speech-to-text provider:
 
 **Privacy-first option**: Local provider keeps your voice on your machine - no data sent to cloud.
 
+## Upcoming Features
+
+Here is what we are building next for VoiceDev:
+
+- **Now (v0.1.0-preview)**:
+    - ✅ Core voice commands and git integration
+    - ✅ Multi-provider support (Groq, Mistral, OpenAI, Local)
+    - ✅ Privacy-first offline mode with faster-whisper
+    - ✅ Mistral Voxtral integration for fast cloud transcription
+- **Next**:
+    - Real-time translation from multiple languages into English
+    - AI-powered developer workflows (for example: inline completion, coding assists, etc)
+    - Voice-based web search with responses in both text and spoken output inside the IDE
+    - More VS Code-native actions by voice (search extensions, update settings, open projects, and more)
+    - Custom voice commands and reusable snippets
+- **Towards v1.0.0 and beyond**:
+    - Production release with full cross-platform support
+    - Expansion to additional marketplaces and IDE ecosystems (Open VSX, Zed, and more)
+
 ### Coming in v0.1.0
 
 - Voice-activated commands (save, format, console.log, etc.)
@@ -261,17 +280,6 @@ Our templates include sections for both non-technical users (basic information) 
 - Maximum recording length: 30 seconds (auto-stop)
 - Requires clear audio input for best accuracy
 - Background noise may affect transcription quality
-
-## Roadmap
-
-- **v0.1.0-preview** (Current):
-    - ✅ Core voice commands and git integration
-    - ✅ Multi-provider support (Groq, Mistral, OpenAI, Local)
-    - ✅ Privacy-first offline mode with faster-whisper
-    - ✅ Mistral Voxtral integration for fast cloud transcription
-- **v0.2.0**: Code generation from voice
-- **v0.3.0**: Custom voice commands and snippets
-- **v1.0.0**: Production release with full cross-platform support
 
 ## Contributing
 
