@@ -121,8 +121,8 @@ VoiceDev is in active development. Here's where we are and where we're heading.
 
 ### 🔵 Next
 
-- Workflow chaining — compose multi-step voice sequences (diff + stage + commit + push)
-- Custom voice commands and reusable snippets
+- **🔗 Action Chaining** — compose multi-step voice sequences into reusable workflows. Say _"git workflow"_ to run diff → stage → commit → push in one voice command. Chain any combination of built-in commands with abort-on-failure safety.
+- **🎙️ Custom Macros** — record a voice phrase and map it to one or more commands. Say _"deploy staging"_ to trigger your own sequence of git pull → build → deploy. Define macros in settings or through the Command Center.
 - AI-powered developer workflows (inline completion, coding assists)
 - Real-time translation from multiple languages into English
 - More VS Code-native actions by voice (search extensions, update settings, open projects)
