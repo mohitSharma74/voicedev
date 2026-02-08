@@ -244,6 +244,60 @@ export function getCommandCenterStyles(): string {
             text-align: right;
         }
 
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid var(--vscode-panel-border);
+        }
+
+        .footer-tip {
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .footer-tip p {
+            color: var(--vscode-descriptionForeground);
+            font-size: 12px;
+        }
+
+        /* Preview Notice */
+        .preview-notice {
+            background-color: var(--vscode-textBlockQuote-background);
+            border-left: 3px solid var(--vscode-charts-purple, #a855f7);
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+        }
+
+        .preview-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--vscode-charts-purple, #a855f7);
+            background-color: var(--vscode-badge-background);
+            padding: 4px 8px;
+            border-radius: 3px;
+            margin-bottom: 8px;
+        }
+
+        .preview-notice p {
+            font-size: 13px;
+            color: var(--vscode-foreground);
+            margin-top: 8px;
+        }
+
+        .preview-notice a {
+            color: var(--vscode-textLink-foreground);
+            text-decoration: none;
+        }
+
+        .preview-notice a:hover {
+            text-decoration: underline;
+        }
+
         .category-tag {
             display: inline-flex;
             align-items: center;

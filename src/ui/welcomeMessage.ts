@@ -15,6 +15,7 @@ export class WelcomeMessageManager {
 	static async show(context: vscode.ExtensionContext): Promise<void> {
 		const message =
 			"🎙️ Welcome to VoiceDev! Voice-control your development workflow.\n\n" +
+			"⚠️ This extension is in early preview - expect rapid improvements and new features!\n\n" +
 			"Quick Start:\n" +
 			"1. Press Ctrl+Shift+V (Cmd+Shift+V on Mac) to start recording\n" +
 			"2. Say a command like 'save all' or 'format document'\n" +
@@ -26,6 +27,7 @@ export class WelcomeMessageManager {
 			"Get Started",
 			"Set API Key",
 			"View Commands",
+			"Share Feedback",
 			"Don't Show Again",
 		);
 
@@ -38,6 +40,11 @@ export class WelcomeMessageManager {
 				break;
 			case "View Commands":
 				await vscode.commands.executeCommand("voicedev.listCommands");
+				break;
+			case "Share Feedback":
+				await vscode.env.openExternal(
+					vscode.Uri.parse("https://github.com/mohitSharma74/voicedev/issues/new/choose"),
+				);
 				break;
 			case "Don't Show Again":
 				await context.globalState.update(this.STORAGE_KEY, true);

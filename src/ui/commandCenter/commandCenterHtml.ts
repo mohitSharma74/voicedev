@@ -77,7 +77,13 @@ export function getCommandCenterHtml(
         </main>
 
         <footer class="footer">
-            <p>Tip: Say any trigger phrase while recording to execute commands</p>
+            <div class="preview-notice">
+                <span class="preview-badge">⚡ Preview v0.1.0</span>
+                <p>This extension is in active development. <a href="https://github.com/mohitSharma74/voicedev/issues/new/choose">Share feedback</a> to help shape VoiceDev!</p>
+            </div>
+            <div class="footer-tip">
+                <p>💡 Tip: Say any trigger phrase while recording to execute commands</p>
+            </div>
         </footer>
     </div>
 

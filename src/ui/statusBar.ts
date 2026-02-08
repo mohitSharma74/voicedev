@@ -75,7 +75,7 @@ export class StatusBarManager {
 		this.clearInterval();
 		this.clearResetTimeout();
 		this.recordingSeconds = 0;
-		this.item.text = `${this.getProviderIcon()} $(unmute) VoiceDev`;
+		this.item.text = `${this.getProviderIcon()} $(unmute) VoiceDev (Preview)`;
 		this.item.tooltip = this.buildTooltip();
 		this.item.backgroundColor = undefined;
 	}
@@ -145,11 +145,13 @@ export class StatusBarManager {
 
 	private buildTooltip(): vscode.MarkdownString {
 		const tooltip = new vscode.MarkdownString(
-			`**VoiceDev** - ${this.getProviderDisplayName()}\n\n` +
+			`**VoiceDev (Preview)** - ${this.getProviderDisplayName()}\n\n` +
+				"⚠️ **Public Preview** - Rapid iteration, features stable\n\n" +
 				"**Keyboard Shortcuts:**\n" +
 				"- `Ctrl+Shift+V` (Cmd+Shift+V on Mac) - Toggle recording\n" +
 				"- `Ctrl+Shift+L` - List voice commands\n\n" +
-				`Click to ${this.currentState === "recording" ? "stop" : "start"} recording`,
+				`Click to ${this.currentState === "recording" ? "stop" : "start"} recording\n\n` +
+				"[💬 Share Feedback](https://github.com/mohitSharma74/voicedev/issues/new/choose)",
 		);
 		tooltip.isTrusted = true;
 		return tooltip;
