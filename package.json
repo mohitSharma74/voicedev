@@ -5,6 +5,7 @@
 	"version": "0.1.0",
 	"publisher": "OneMohitSharma",
 	"icon": "media/assets/logo-128x128.png",
+	"license": "BSD-3-Clause",
 	"engines": {
 		"vscode": "^1.85.0"
 	},
